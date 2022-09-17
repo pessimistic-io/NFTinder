@@ -6,7 +6,7 @@ require('solidity-coverage');
 // require('hardhat-deploy');
 require('hardhat-gas-reporter');
 require('hardhat-contract-sizer');
-
+require("@nomicfoundation/hardhat-chai-matchers")
 
 
 module.exports = {
@@ -35,11 +35,11 @@ module.exports = {
     },
     contractSizer: {
         alphaSort: true,
-        runOnCompile: true,
+        runOnCompile: false,
         disambiguatePaths: false,
     },
     gasReporter: {
-        enabled: true,
+        enabled: false,
         currency: "USD",
     },
     mocha: {

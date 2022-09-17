@@ -15,14 +15,12 @@ library Lib {
     struct Order {
         NFT nft;
         NFT[] nfts;
-        uint index;
     }
 
     bytes32 constant private ORDER_TYPEHASH = keccak256(
         "Order("
             "NFT nft,"
-            "NFT[] nfts,"
-            "uint256 index"
+            "NFT[] nfts"
         ")"
         "NFT("
             "address collection,"
@@ -53,7 +51,7 @@ library Lib {
     function hash(Order calldata order) internal pure returns (bytes32) {
         bytes32 nftHash = hash(order.nft);
         bytes32 nftsHash = hash(order.nfts);
-        return keccak256(abi.encodePacked(ORDER_TYPEHASH, nftHash, nftsHash, order.index));
+        return keccak256(abi.encodePacked(ORDER_TYPEHASH, nftHash, nftsHash));
     }
 
 }
@@ -61,19 +59,21 @@ library Lib {
 contract NFTinder is EIP712("NFTinder", "0.1") {
     using Lib for Lib.Order;
 
-    function hashOrder(Lib.Order calldata order) public view returns (bytes32) {
+    function hash(Lib.Order calldata order) public view returns (bytes32) {
         return _hashTypedDataV4(order.hash());
     }
 
-    function entry(Lib.Order calldata order, bytes calldata signature) external {
-        bytes32 hash = hashOrder(order);
+    function entry(uint index, Lib.Order calldata order, bytes calldata signature) external {
+        bytes32 hash = hash(order);
         (address u2, ECDSA.RecoverError err) = ECDSA.tryRecover(hash, signature);
-        require (u2 != address(0) && err == ECDSA.RecoverError.NoError);
-        swap(msg.sender, order.nfts[order.index], u2, order.nft);
+        require (u2 != address(0) && err == ECDSA.RecoverError.NoError, "Invalid signature");
+        swap(msg.sender, order.nfts[index], u2, order.nft);
     }
 
+    event Swap(address, Lib.NFT, address, Lib.NFT);
     function swap(address u1, Lib.NFT calldata nft1, address u2, Lib.NFT calldata nft2) private {
         IERC721(nft1.collection).transferFrom(u1, u2, nft1.tokenId);
         IERC721(nft2.collection).transferFrom(u2, u1, nft2.tokenId);
+        emit Swap(u1, nft1, u2, nft2);
     }
 }
