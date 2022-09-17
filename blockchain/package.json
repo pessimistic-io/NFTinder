@@ -1,0 +1,13 @@
+{
+  "name": "nftinder-contracts",
+  "version": "1.0.0",
+  "description": "Smart contracts for NFTinder project",
+  "main": "index.js",
+  "repository": "https://github.com/pessimistic-io/NFTinder",
+  "author": "eMarchenko",
+  "license": "MIT",
+
+  "devDependencies": {
+
+  }
+}
