@@ -1,13 +1,28 @@
 {
-  "name": "nftinder-contracts",
-  "version": "1.0.0",
-  "description": "Smart contracts for NFTinder project",
-  "main": "index.js",
-  "repository": "https://github.com/pessimistic-io/NFTinder",
-  "author": "eMarchenko",
-  "license": "MIT",
+    "name": "nftinder-contracts",
+    "version": "1.0.0",
+    "description": "Smart contracts for NFTinder project",
+    "main": "index.js",
+    "repository": "https://github.com/pessimistic-io/NFTinder",
+    "author": "eMarchenko",
+    "license": "MIT",
+    
+    "scripts": {
+        "compile": "npx hardhat compile",
+        "test": "npx hardhat test",
+        "size": "npx hardhat size-contracts"
+    },
 
-  "devDependencies": {
 
-  }
+    "dependencies": {
+        "@openzeppelin/contracts": "4.7.3"
+    },
+    
+    "devDependencies": {
+        "hardhat": "^2.4.3",
+        "@nomiclabs/hardhat-ethers": "2.1.1",
+        "hardhat-gas-reporter": "1.0.8",
+        "hardhat-contract-sizer": "^2.0.3",
+        "solidity-coverage": "0.7.21"
+    }
 }
