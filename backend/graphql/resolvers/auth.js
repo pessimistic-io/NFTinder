@@ -1,7 +1,6 @@
 const Nft = require('../../models/nft');
 const User = require('../../models/user');
 
-//In progress
 module.exports = {
   auth: async args => {
     try {
@@ -15,7 +14,7 @@ module.exports = {
         wallet: args.userInput.wallet
       });
       if (user != null && !existingNft) {
-        throw err;
+        return null;
       }
       if (existingNft && existingNft.ownerWallet == user.wallet) {
         return existingNft;
