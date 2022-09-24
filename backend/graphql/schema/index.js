@@ -69,7 +69,7 @@ type RootQuery {
 type RootMutation {
     auth(nftInput: NftInput!, userInput: UserInput!): Nft!
     addNft(nftInput: NftInput!): Nft!
-    likeNft(nftId: ID!): Nft!
+    likeNft(nftId: ID!, userInput: UserInput!): LikeNft!
     dislikeNft(nftId: ID!): Nft!
     signNfts(nftIds: [ID!], signature: SignatureInput!): Signature!
     saveSignature(signId: SignatureInput!): Signature!
