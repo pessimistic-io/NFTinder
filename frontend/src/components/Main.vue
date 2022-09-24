@@ -127,7 +127,6 @@ export default {
       const query =
       `mutation{
         auth(
-          userInput: {wallet: "${this.main_account}"},
           nftInput: {
             chainId: "${s.chainId}",
             collectionAddress: "${s.collectionAddress}",
