@@ -21,7 +21,6 @@
         </li>
       </ul>
       <p v-if="bad_nfts != 0">Note: You have {{bad_nfts}} NFTs without picture</p>
-
     </form>
   </div>
 </template>
@@ -47,6 +46,22 @@ export default {
     }
   },
 
+  computed: {
+
+    normalized_selected_nft() {
+
+      const s = this.getNftByName(this.selected_nft)
+
+      return {
+        chainId: s.chain,
+        collectionAddress: s.collectionAddress,
+        ownerWallet: s.currentOwner,
+        tokenId: s.collectionTokenId
+      }
+    }
+  },
+
+
   async created() {
     this.setQuicknodeProvider();
     /* duplicates accounts watcher handler, because of "immediate: false" */
@@ -65,6 +80,11 @@ export default {
   },
 
   methods: {
+
+    getNftByName(name) {
+
+      return this.nfts.find(n=>n.name==name)
+    },
 
     setQuicknodeProvider() {
       const provider = process.env.VUE_APP_QUICKNODE;
@@ -97,10 +117,24 @@ export default {
 
     },
 
-
     async selectNft(event) {
 
-      console.log(this.normalized_selected_nft)
+      const s = this.normalized_selected_nft;
+
+      const query =
+      `mutation{
+        auth(
+          userInput: {wallet: "${this.main_account}"},
+          nftInput: {
+            chainId: "${s.chainId}",
+            collectionAddress: "${s.collectionAddress}",
+            tokenId: "${s.tokenId}",
+            ownerWallet: "${this.main_account}"
+          }
+        ){chainId, collectionAddress, ownerWallet, tokenId}}`
+
+
+      // console.log(query)
 
       const response = await fetch('http://localhost:3000/graphql', {
         method: 'POST',
@@ -108,21 +142,18 @@ export default {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          query: `
-            mutation {
-              addNft(objects: [{ nftInput: $nft}]) {
-                returning {
-                  id
-                  created_at
-                }
-              }
-            }`,
-          variables:{nft: this.normalized_selected_nft}
+          query: query,
+          variables:{}
         })
       });
 
+      if (response.status==200){
+        alert('now you are ready for swiping')
+      } else {
+        console.log(response)
+        alert('error')
+      }
 
-      // return false;
     },
 
     isSelected(nft_name) {
