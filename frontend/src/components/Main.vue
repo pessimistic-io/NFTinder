@@ -45,6 +45,19 @@ export default {
     }
   },
 
+  computed: {
+
+    normalized_selected_nft() {
+      return {
+        chainId: this.selected_nft.chain,
+        collectionAddress: this.selected_nft.collectionAddress,
+        ownerWallet: this.selected_nft.currentOwner,
+        tokenId: this.selected_nft.collectionTokenId
+      }
+    }
+  },
+
+
   async created() {
     this.setQuicknodeProvider();
     /* duplicates accounts watcher handler, because of "immediate: false" */
@@ -92,14 +105,25 @@ export default {
 
     async selectNft(event) {
 
-      console.log(this.selected_nft)
+      console.log(this.normalized_selected_nft)
 
-      const response = await fetch('/graphql', {
+      const response = await fetch('http://localhost:3000/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(this.selected_nft)
+        body: JSON.stringify({
+          query: `
+            mutation {
+              addNft(objects: [{ nftInput: $nft}]) {
+                returning {
+                  id
+                  created_at
+                }
+              }
+            }`,
+          variables:{nft: this.normalized_selected_nft}
+        })
       });
 
 
