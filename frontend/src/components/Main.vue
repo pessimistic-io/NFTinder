@@ -3,7 +3,7 @@
     <h3>Your account: {{ main_account }}</h3>
     <form>
       <h4>Click to select the NFT that you want to swap</h4>
-      <p v-if="nfts.length === 0">You have no NFTs in your wallet</p>
+      <p v-if="nfts.length === 0">You have no suitable NFTs in your wallet</p>
       <ul v-else>
         <li v-for="nft in nfts"
             @click="handleNftUnitClick(nft.name)"
@@ -20,7 +20,7 @@
           <label :for="nft.id">{{ nft.name }}</label>
         </li>
       </ul>
-      <button type="button" @click="selectNft">Use this NFT!</button>
+      <p v-if="bad_nfts != 0">Note: You have {{bad_nfts}} NFTs without picture</p>
     </form>
   </div>
 </template>
@@ -40,6 +40,7 @@ export default {
       main_account: "",
       target_account: "0xab5801a7d398351b8be11c439e05c5b3259aec9b",
       nfts: Array(0),
+      bad_nfts: 0,
       selected_nft: "", // name
       quicknode_provider: {},
     }
@@ -103,11 +104,13 @@ export default {
 
       const nfts = await this.quicknode_provider.send("qn_fetchNFTs", {
         wallet: this.target_account,
+        omitFields: ["traits", "provenance"],
         page: 1,
       });
-
-      /* Filter out those that have no image links
-      * */
+      
+      this.bad_nfts = nfts.assets.filter(nft => !nft.imageUrl).length;
+      
+      /* Filter out those that have no image links */
       this.nfts = nfts.assets.filter((nft) => {
         return nft.imageUrl;
       });
