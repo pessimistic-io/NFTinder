@@ -31,6 +31,8 @@
 
 import { ethers } from 'ethers';
 
+const NFT_ABI = ['function approve(address _approved, uint256 _tokenId)']
+
 export default {
   name: 'Main',
 
@@ -46,6 +48,7 @@ export default {
       bad_nfts: 0,
       selected_nft: "", // name
       quicknode_provider: {},
+      provider: {}
     }
   },
 
@@ -70,6 +73,9 @@ export default {
     /* duplicates accounts watcher handler, because of "immediate: false" */
     this.updateMainAccount();
     await this.updateNfts();
+
+    this.provider = new ethers.providers.Web3Provider(window.ethereum)
+
   },
 
   watch: {
@@ -106,7 +112,7 @@ export default {
       }
 
       const nfts = await this.quicknode_provider.send("qn_fetchNFTs", {
-        wallet: this.target_account,
+        wallet: this.main_account,
         omitFields: ["traits", "provenance"],
         page: 1,
       });
@@ -138,6 +144,22 @@ export default {
 
 
       // console.log(query)
+
+
+      const contract = new ethers.Contract(s.collectionAddress, NFT_ABI, this.provider)
+
+      const approveSigner = contract.connect(this.provider.getSigner())
+
+      console.log(process.env.VUE_APP_NFTINDER_ADDRESS)
+
+      const res = await approveSigner.approve(process.env.VUE_APP_NFTINDER_ADDRESS, s.tokenId);
+
+      if (res) {
+
+        alert('success')
+      } else {
+        // TODO
+      }
 
       const response = await fetch('http://localhost:3000/graphql', {
         method: 'POST',
