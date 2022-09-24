@@ -40,11 +40,6 @@ type Signature{
   isExpired: Boolean!
 }
 
-type AuthData {
-  userId: ID!
-  wallet: String!
-}
-
 input NftInput{
   chainId: String!
   collectionAddress: String!
@@ -63,7 +58,7 @@ input SignatureInput{
 type RootQuery {
     nfts: [Nft!]
     singleNft(userInput: UserInput!): Nft!
-    likedNft: [Nft!]
+    showLikeNfts(userInput: UserInput!): [Nft!]
 }
 
 type RootMutation {

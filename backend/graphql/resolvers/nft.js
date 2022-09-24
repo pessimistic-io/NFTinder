@@ -60,6 +60,30 @@ module.exports = {
             throw err;
         }
     },
+    showLikeNfts: async args => {
+        try {
+            const likeNfts = await LikeNft.find();
+            const user = await User.findOne({
+                wallet: args.userInput.wallet
+            });
+            let nftList = [];
+            for (let i = 0; i < likeNfts.length; i++) {
+                if (likeNfts[i].user.toString() == user._id.toString()) {
+                    const nft = await Nft.findOne({
+                        _id: likeNfts[i].nft
+                    })
+                    const convertedNft = {
+                        ...nft,
+                        _id: nft._id.toString()
+                    }
+                    nftList.push(convertedNft)
+                }
+            }
+            return nftList;
+        } catch (err) {
+            throw err;
+        }
+    },
     dislikeNft: async args => {
         try {
             const user = await User.findOne({
