@@ -26,8 +26,8 @@ type Nft{
   chainId: String!
   collectionAddress: String!
   tokenId: String!
-  collectionName: String!
-  picUrl: String!
+  collectionName: String
+  picUrl: String
   ownerWallet: String!
 }
 
@@ -63,6 +63,7 @@ type RootQuery {
     nfts: [Nft!]
     singleNft(nftOwnId: ID!): Nft!
     showLikeNfts(nftOwnId: ID!): [Nft!]
+    showUnseenNfts(user: String!): [Nft!]
 }
 
 type RootMutation {

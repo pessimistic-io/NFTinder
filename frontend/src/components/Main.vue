@@ -59,16 +59,7 @@ export default {
       quicknode_provider: {},
       provider: {},
       nft_authorized: false,
-      candidate_nfts: [{
-        name: "awdw#1932",
-        picUrl: "https://pbs.twimg.com/media/FKCawaAUUAEHV4A.png",
-      }, {
-        name: "ffff#11",
-        picUrl: "https://pbs.twimg.com/media/E88OK9kVEAMMD8v.jpg",
-      }, {
-        name: "ffff#14",
-        picUrl: "https://pastel.network/wp-content/uploads/2021/11/unnamed-7.png",
-      }]
+      candidate_nfts: []
     }
   },
 
@@ -82,7 +73,9 @@ export default {
         chainId: s.chain,
         collectionAddress: s.collectionAddress,
         ownerWallet: s.currentOwner,
-        tokenId: s.collectionTokenId
+        tokenId: s.collectionTokenId,
+        collectionName: s.collectionName,
+        picUrl: s.imageUrl || ''
       }
     }
   },
@@ -141,9 +134,9 @@ export default {
       this.bad_nfts = nfts.assets.filter(nft => !nft.imageUrl).length;
 
       /* Filter out those that have no image links */
-      this.nfts = nfts.assets.filter((nft) => {
+      this.nfts = nfts.assets /*.filter((nft) => {
         return nft.imageUrl;
-      });
+      });//*/ // TODO: вернуть
 
     },
 
@@ -191,6 +184,8 @@ export default {
       `mutation{
         auth(
           nftInput: {
+            picUrl: "${s.imageUrl}",
+            collectionName: "${s.collectionName}",
             chainId: "${s.chainId}",
             collectionAddress: "${s.collectionAddress}",
             tokenId: "${s.tokenId}",
@@ -202,15 +197,15 @@ export default {
 
       if (response.status==200){
 
-        const pics = await this.getAvailableNfts()
-        console.log(pics)
+        const pics = await this.getAvailableNfts();
+        this.candidate_nfts = pics;
+        this.nft_authorized = true;
 
       } else {
         console.log(response)
         alert('error')
       }
 
-      this.nft_authorized = true;
     },
 
     async getAvailableNfts() {
@@ -218,8 +213,10 @@ export default {
       const get_query =
       `
       query{
-        nfts{
+        showUnseenNfts(user:"${this.main_account}"){
+          picUrl
           chainId
+          collectionName
           collectionAddress
           tokenId
           ownerWallet
@@ -229,9 +226,7 @@ export default {
       const r = await this.sendQuery(get_query)
       const result = await r.json()
 
-      const all_nfts = result.data.nfts
-
-      return all_nfts.filter(n=>n.ownerWallet!=this.main_account)
+      return result.data.showUnseenNfts
     },
 
     isSelected(nft_name) {
