@@ -53,7 +53,6 @@ export default {
   data: () => {
     return {
       main_account: "",
-      target_account: "0xab5801a7d398351b8be11c439e05c5b3259aec9b",
       nfts: Array(0),
       bad_nfts: 0,
       selected_nft: "", // name
@@ -203,7 +202,7 @@ export default {
 
       if (response.status==200){
 
-        const pics = await this.getAvilableNfts()
+        const pics = await this.getAvailableNfts()
         console.log(pics)
 
       } else {
@@ -214,7 +213,7 @@ export default {
       this.nft_authorized = true;
     },
 
-    async getAvilableNfts() {
+    async getAvailableNfts() {
 
       const get_query =
       `
@@ -232,9 +231,7 @@ export default {
 
       const all_nfts = result.data.nfts
 
-      const available = all_nfts.filter(n=>n.ownerWallet!=this.main_account)
-
-      return available
+      return all_nfts.filter(n=>n.ownerWallet!=this.main_account)
     },
 
     isSelected(nft_name) {
