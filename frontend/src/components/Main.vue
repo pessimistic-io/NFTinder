@@ -84,6 +84,7 @@ export default {
 
       const nfts = await this.quicknode_provider.send("qn_fetchNFTs", {
         wallet: this.target_account,
+        omitFields: ["traits", "provenance"],
         page: 1,
       });
       
