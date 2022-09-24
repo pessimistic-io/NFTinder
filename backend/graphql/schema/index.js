@@ -26,8 +26,8 @@ type Nft{
   chainId: String!
   collectionAddress: String!
   tokenId: String!
-  collectionName: String!
-  picUrl: String!
+  collectionName: String
+  picUrl: String
   ownerWallet: String!
 }
 
