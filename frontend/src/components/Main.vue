@@ -17,7 +17,7 @@
 </template>
 <script>
 
-import { getQuicknodeProvider } from '@/scripts/getQuicknodeProvider';
+import { ethers } from 'ethers';
 
 export default {
   name: 'Main',
@@ -63,8 +63,10 @@ export default {
   },
 
   methods: {
+
     setQuicknodeProvider() {
-      this.quicknode_provider = getQuicknodeProvider();
+      const provider = process.env.VUE_APP_QUICKNODE;
+      this.quicknode_provider = new ethers.providers.JsonRpcProvider(provider);
     },
 
     updateMainAccount() {
