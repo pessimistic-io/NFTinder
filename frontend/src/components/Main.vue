@@ -2,16 +2,24 @@
   <div :class="$style.Main">
     <h3>Your account: {{ main_account }}</h3>
     <form>
-      <h4>Select the NFT that you want to swap</h4>
+      <h4>Click to select the NFT that you want to swap</h4>
       <p v-if="nfts.length === 0">You have no NFTs in your wallet</p>
       <ul v-else>
-        <li v-for="nft in nfts">
-          <input :id="nft.id" name="nft" type="radio">
+        <li v-for="nft in nfts"
+            @click="handleNftUnitClick(nft.name)"
+            :class="{
+              [$style.nft_unit]: true,
+              [$style.selected_nft]: isSelected(nft.name),
+            }"
+        >
+          <img
+            :class="$style.nft_image"
+            :src="nft.imageUrl"
+            :alt="nft.name"
+          >
           <label :for="nft.id">{{ nft.name }}</label>
         </li>
       </ul>
-
-      <button v-on:click="selectNft" type="button">Use this nfts for play</button>
     </form>
   </div>
 </template>
@@ -31,32 +39,10 @@ export default {
       main_account: "",
       target_account: "0xab5801a7d398351b8be11c439e05c5b3259aec9b",
       nfts: Array(0),
+      selected_nft: "", // name
       quicknode_provider: {},
-      selected_nft: {}
-      /* //graphql format:
-        type Nft{
-          _id: ID!
-          chainId: String!
-          collectionAddress: String!
-          tokenId: String!
-          ownerWallet: String!
-        }
-      */
     }
   },
-
-  computed: {
-
-    normalized_selected_nft() {
-      return {
-        chainId: this.selected_nft.chain,
-        collectionAddress: this.selected_nft.collectionAddress,
-        ownerWallet: this.selected_nft.currentOwner,
-        tokenId: this.selected_nft.collectionTokenId
-      }
-    }
-  },
-
 
   async created() {
     this.setQuicknodeProvider();
@@ -96,10 +82,14 @@ export default {
       const nfts = await this.quicknode_provider.send("qn_fetchNFTs", {
         wallet: this.target_account,
         page: 1,
-        perPage: 40
       });
-      console.log(nfts);
-      this.nfts = nfts.assets;
+
+      /* Filter out those that have no image links
+      * */
+      this.nfts = nfts.assets.filter((nft) => {
+        return nft.imageUrl;
+      });
+
     },
 
 
@@ -128,6 +118,14 @@ export default {
 
 
       // return false;
+    },
+
+    isSelected(nft_name) {
+      return nft_name === this.selected_nft;
+    },
+
+    handleNftUnitClick(nft_name) {
+      this.selected_nft = nft_name;
     }
   },
 };
@@ -136,6 +134,22 @@ export default {
 <style lang="scss" module>
 
 .Main {
-  maring:2em;
+
+  .nft_unit {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    height: 100px;
+    cursor: pointer;
+  }
+
+  .selected_nft {
+    background-color: #dde;
+  }
+
+  .nft_image {
+    height: 100px;
+    margin-right: 15px;
+  }
 }
 </style>
