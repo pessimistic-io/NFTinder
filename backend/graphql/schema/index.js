@@ -63,6 +63,7 @@ type RootQuery {
     nfts: [Nft!]
     singleNft(nftOwnId: ID!): Nft!
     showLikeNfts(nftOwnId: ID!): [Nft!]
+    showUnseenNfts(user: String!): [Nft!]
 }
 
 type RootMutation {
