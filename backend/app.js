@@ -31,7 +31,8 @@ app.use(
 );
 
 const URL = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@clusternftinder.tajvrwb.mongodb.net/test`;
-mongoose.connect(URL, { useNewUrlParser: true })
+const OPTIONS = { useNewUrlParser: true, useUnifiedTopology: true };
+mongoose.connect(URL, OPTIONS)
     .then(() => app.listen(3000)).catch(err => {
         console.log(err)
     });
