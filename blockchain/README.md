@@ -1,4 +1,4 @@
-# NFTinder
+# NFTinder Smart Contracts
 
 Under the hood:
 - All NFTs should be approved for `NFTinder` contract first
