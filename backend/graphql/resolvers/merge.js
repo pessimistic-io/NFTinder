@@ -1,19 +1,19 @@
 const Nft = require('../../models/nft');
 
-const nfts = async nftsIds => {
-    try {
-        const nfts = await Nft.find({
-            _id: {
-                $in: nftsIds
-            }
-        });
-        return nfts.map(nft => {
-            return transformNft(nft);
-        });
-    } catch (err) {
-        throw err;
-    }
-};
+// const nfts = async nftsIds => {
+//     try {
+//         const nfts = await Nft.find({
+//             _id: {
+//                 $in: nftsIds
+//             }
+//         });
+//         return nfts.map(nft => {
+//             return transformNft(nft);
+//         });
+//     } catch (err) {
+//         throw err;
+//     }
+// };
 
 
 
@@ -35,17 +35,17 @@ const nfts = async nftsIds => {
 //     }
 // }
 
-// const nft = async tokenId => {
-//     try {
-//         const nft = await Nft.findById(tokenId);
-//         return {
-//             ...nft._doc,
-//             _id: nft.id,
-//         };
-//     } catch (err) {
-//         throw err;
-//     }
-// };
+const singleNft = async tokenId => {
+    try {
+        const nft = await Nft.findById(tokenId);
+        return {
+            ...nft._doc,
+            _id: nft.id,
+        };
+    } catch (err) {
+        throw err;
+    }
+};
 
 // const user = async userId => {
 //     try {
@@ -102,6 +102,7 @@ const transformNft = nft => {
 // exports.transformBuy = transformBuy;
 exports.transformNft = transformNft;
 
-exports.nfts = nfts;
+//exports.nfts = nfts;
+exports.singleNft = singleNft;
 // exports.events = events;
 // exports.singleEvent = singleEvent;

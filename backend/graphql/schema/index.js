@@ -62,7 +62,7 @@ input SignatureInput{
 
 type RootQuery {
     nfts: [Nft!]
-    nft: Nft!
+    singleNft(userInput: UserInput!): Nft!
     likedNft: [Nft!]
 }
 
