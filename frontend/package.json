@@ -9,6 +9,7 @@
   "dependencies": {
     "core-js": "^3.8.3",
     "vue": "^2.6.14",
+    "vue-tinder": "^2.0.3",
     "web3": "^1.8.0"
   },
   "devDependencies": {

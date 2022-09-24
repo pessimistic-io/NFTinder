@@ -12,6 +12,7 @@
 <script>
 
 import Main from '@/components/Main';
+import Swiper from '@/components/Swiper';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { requestAccounts } from '@/scripts/requestAccounts';
 
@@ -19,7 +20,8 @@ export default {
   name: 'App',
 
   components: {
-    Main
+    Main,
+    Swiper
   },
 
   data: () => {
