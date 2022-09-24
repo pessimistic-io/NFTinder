@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.Main">
-    <h3>Your account: {{ target_account }}</h3>
+    <h3>Your account: {{ main_account }}</h3>
     <form>
       <h4>Select the NFT that you want to swap</h4>
       <p v-if="nfts.length === 0">You have no NFTs in your wallet</p>
@@ -15,7 +15,7 @@
 </template>
 <script>
 
-import { getQuicknodeProvider } from '@/scripts/getQuicknodeProvider';
+import { ethers } from 'ethers';
 
 export default {
   name: 'Main',
@@ -51,8 +51,10 @@ export default {
   },
 
   methods: {
+
     setQuicknodeProvider() {
-      this.quicknode_provider = getQuicknodeProvider();
+      const provider = process.env.VUE_APP_QUICKNODE;
+      this.quicknode_provider = new ethers.providers.JsonRpcProvider(provider);
     },
 
     updateMainAccount() {
@@ -67,7 +69,8 @@ export default {
       }
 
       const nfts = await this.quicknode_provider.send("qn_fetchNFTs", {
-        wallet: this.target_account
+        wallet: this.target_account,
+        page: 1,
       });
       console.log(nfts);
       this.nfts = nfts.assets;
