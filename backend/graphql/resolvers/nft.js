@@ -105,5 +105,41 @@ module.exports = {
         } catch (err) {
             throw err;
         }
+    },
+    // выдаёт нфт для показа
+    showUnseenNfts: async args => {
+
+        const user = args.user
+        const not_own = n=>n.ownerWallet!=user
+
+        try {
+
+            const nfts = await Nft.find()
+            const likes = await LikeNft
+                .find()
+                .populate('nftOwn')
+                .populate('nftLike')
+                .exec();
+            const dislikes = await DislikeNft
+                .find()
+                .populate('nft')
+                .populate('user')
+                .exec();
+
+            // console.log(likes)
+            // console.log(nfts)
+
+            // const not_liked = n=>likes.find(l=>l.nftOwn.collectionAddress==)
+
+            return nfts
+                .filter(not_own)
+                .map(transformNft)
+                // .filter(not_liked)
+                // .filter(not_disliked)
+
+        } catch (err) {
+            throw err;
+        }
+
     }
 }
