@@ -6,12 +6,12 @@
       <p v-if="nfts.length === 0">You have no NFTs in your wallet</p>
       <ul v-else>
         <li v-for="nft in nfts">
-          <input :id="nft.id" name="nft" type="radio" v:onclick="">
+          <input :id="nft.id" name="nft" type="radio">
           <label :for="nft.id">{{ nft.name }}</label>
         </li>
       </ul>
 
-      <button v:onclick="submit">Use this nfts for play</button>
+      <button v-on:click="selectNft" type="button">Use this nfts for play</button>
     </form>
   </div>
 </template>
@@ -89,7 +89,10 @@ export default {
       this.nfts = nfts.assets;
     },
 
-    async submit() {
+
+    async selectNft(event) {
+
+      console.log(this.selected_nft)
 
       const response = await fetch('/graphql', {
         method: 'POST',
@@ -99,7 +102,8 @@ export default {
         body: JSON.stringify(this.selected_nft)
       });
 
-      console.log(response)
+
+      // return false;
     }
   },
 };
