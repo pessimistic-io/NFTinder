@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Main v-if="is_auth"/>
+    <Main v-if="is_auth" :accounts="accounts"/>
     <span v-else-if="access_to_accounts">Metamask access required</span>
     <span v-else-if="incorrect_provider">Do you have multiple wallets installed?</span>
     <span v-else-if="!is_mainnet">Switch to mainnet to use this app</span>
@@ -14,7 +14,6 @@
 import Main from '@/components/Main';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { requestAccounts } from '@/scripts/requestAccounts';
-import { getConnectedWeb3Instance } from '@/scripts/getConnectedWeb3Instance';
 
 export default {
   name: 'App',
@@ -26,7 +25,7 @@ export default {
   data: () => {
     return {
       accounts: Array(),
-      is_rpc_connected: false, // TODO:добавить ивенты + условную отрисовку Main
+      is_rpc_connected: false,
       access_to_accounts: false,
       chain_ID: '',
       incorrect_provider: true,
@@ -79,7 +78,6 @@ export default {
         this.checkRPCConnection(); // show app only when you can make RPC calls
         this.subscribeToRPCConnect();
         this.subscribeToRPCDisconnect();
-        window.web3 = getConnectedWeb3Instance();
       }
     },
 
