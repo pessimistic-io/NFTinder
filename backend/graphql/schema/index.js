@@ -32,7 +32,6 @@ type Nft{
 type User{
   _id: ID!
   wallet: String!
-  authToken: String!
 }
 
 type Signature{
@@ -44,7 +43,6 @@ type Signature{
 type AuthData {
   userId: ID!
   wallet: String!
-  authToken: String!
 }
 
 input NftInput{
@@ -56,7 +54,6 @@ input NftInput{
 
 input UserInput{
   wallet: String!
-  authToken: String!
 }
 
 input SignatureInput{
@@ -64,6 +61,7 @@ input SignatureInput{
 }
 
 type RootQuery {
+    nfts: [Nft!]
     nft: Nft!
     likedNft: [Nft!]
 }
