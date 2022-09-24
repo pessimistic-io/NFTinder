@@ -146,6 +146,9 @@ export default {
 
       if (response.status==200){
         alert('now you are ready for swiping')
+      } else {
+        console.log(response)
+        alert('error')
       }
 
     },
