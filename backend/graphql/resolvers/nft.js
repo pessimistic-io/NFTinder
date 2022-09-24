@@ -1,6 +1,7 @@
 const Nft = require('../../models/nft');
 const User = require('../../models/user');
 const LikeNft = require('../../models/likeNft')
+const DislikeNft = require('../../models/dislikeNft')
 
 const {
     transformNft
@@ -55,6 +56,28 @@ module.exports = {
                 _id: likedNft._id.toString()
             }
             return convertedLikedNft;
+        } catch (err) {
+            throw err;
+        }
+    },
+    dislikeNft: async args => {
+        try {
+            const user = await User.findOne({
+                wallet: args.userInput.wallet
+            });
+            const currentNft = await Nft.findOne({
+                _id: args.nftId
+            });
+            const dislikedNft = new DislikeNft({
+                user: user,
+                nft: currentNft
+            });
+            await dislikedNft.save();
+            const converteddislikedNft = {
+                ...dislikedNft,
+                _id: dislikedNft._id.toString()
+            }
+            return converteddislikedNft;
         } catch (err) {
             throw err;
         }
