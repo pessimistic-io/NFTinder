@@ -1,39 +1,43 @@
 <template>
   <div :class="$style.Main">
-    <h3>Your account: {{ main_account }}</h3>
-    <form>
-      <h4>Click to select the NFT that you want to swap</h4>
-      <p v-if="nfts.length === 0">You have no suitable NFTs in your wallet</p>
-      <div v-else>
-        <ul>
-          <li v-for="nft in nfts"
-              @click="handleNftUnitClick(nft.name)"
-              :class="{
+    <div v-if="!nft_authorized">
+      <h3>Your account: {{ main_account }}</h3>
+      <form>
+        <h4>Click to select the NFT that you want to swap</h4>
+        <p v-if="nfts.length === 0">You have no suitable NFTs in your wallet</p>
+        <div v-else>
+          <ul>
+            <li v-for="nft in nfts"
+                @click="handleNftUnitClick(nft.name)"
+                :class="{
               [$style.nft_unit]: true,
               [$style.selected_nft]: isSelected(nft.name),
             }"
-          >
-            <img
-              :class="$style.nft_image"
-              :src="nft.imageUrl"
-              :alt="nft.name"
             >
-            <label :for="nft.id">{{ nft.name }}</label>
-          </li>
-        </ul>
-        <button :class="$style.select_btn" type="button" @click="selectNft">Use this NFT!</button>
-      </div>
-      <p v-if="bad_nfts != 0">Note: You have {{bad_nfts}} NFTs without picture</p>
-    </form>
+              <img
+                :class="$style.nft_image"
+                :src="nft.imageUrl"
+                :alt="nft.name"
+              >
+              <label :for="nft.id">{{ nft.name }}</label>
+            </li>
+          </ul>
+          <button :class="$style.select_btn" type="button" @click="selectNft">Use this NFT!</button>
+        </div>
+        <p v-if="bad_nfts != 0">Note: You have {{bad_nfts}} NFTs without picture</p>
+      </form>
+    </div>
+    <Slider v-else :candidate_nfts="candidate_nfts"/>
   </div>
 </template>
 <script>
 
 import { ethers } from 'ethers';
+import Slider from '@/components/Slider';
 
 export default {
   name: 'Main',
-
+  components: { Slider },
   props: {
     accounts: Array(0),
   },
@@ -46,6 +50,17 @@ export default {
       bad_nfts: 0,
       selected_nft: "", // name
       quicknode_provider: {},
+      nft_authorized: false,
+      candidate_nfts: [{
+        name: "awdw#1932",
+        picUrl: "https://pbs.twimg.com/media/FKCawaAUUAEHV4A.png",
+      }, {
+        name: "ffff#11",
+        picUrl: "https://pbs.twimg.com/media/E88OK9kVEAMMD8v.jpg",
+      }, {
+        name: "ffff#14",
+        picUrl: "https://pastel.network/wp-content/uploads/2021/11/unnamed-7.png",
+      }]
     }
   },
 
@@ -85,8 +100,9 @@ export default {
   methods: {
 
     getNftByName(name) {
-
-      return this.nfts.find(n=>n.name==name)
+      return this.nfts.find(n => {
+        return n.name===name;
+      });
     },
 
     setQuicknodeProvider() {
@@ -120,7 +136,7 @@ export default {
 
     },
 
-    async selectNft(event) {
+    async selectNft() {
 
       const s = this.normalized_selected_nft;
 
@@ -138,7 +154,7 @@ export default {
 
 
       // console.log(query)
-
+/*
       const response = await fetch('http://localhost:3000/graphql', {
         method: 'POST',
         headers: {
@@ -155,8 +171,9 @@ export default {
       } else {
         console.log(response)
         alert('error')
-      }
+      }*/
 
+      this.nft_authorized = true;
     },
 
     isSelected(nft_name) {
