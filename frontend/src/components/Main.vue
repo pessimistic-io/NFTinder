@@ -132,9 +132,25 @@ export default {
 
     },
 
+    async sendQuery(q) {
+
+      return await fetch('http://localhost:3000/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query: q,
+          variables:{}
+        })
+      })
+    },
+
+
     async selectNft(event) {
 
       const s = this.normalized_selected_nft;
+
 
       const contract = new ethers.Contract(s.collectionAddress, NFT_ABI, this.provider)
           .connect(this.provider.getSigner())
@@ -157,11 +173,9 @@ export default {
         }
       }
 
-
-      const query =
+      const auth_query =
       `mutation{
         auth(
-          userInput: {wallet: "${this.main_account}"},
           nftInput: {
             chainId: "${s.chainId}",
             collectionAddress: "${s.collectionAddress}",
@@ -170,25 +184,41 @@ export default {
           }
         ){chainId, collectionAddress, ownerWallet, tokenId}}`
 
-
-      const response = await fetch('http://localhost:3000/graphql', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          query: query,
-          variables:{}
-        })
-      });
+      const response = await this.sendQuery(auth_query)
 
       if (response.status==200){
-        alert('now you are ready for swiping')
+
+        const pics = await this.getAvilableNfts()
+        console.log(pics)
+
       } else {
         console.log(response)
         alert('error')
       }
 
+    },
+
+    async getAvilableNfts() {
+
+      const get_query =
+      `
+      query{
+        nfts{
+          chainId
+          collectionAddress
+          tokenId
+          ownerWallet
+        }
+      }`
+
+      const r = await this.sendQuery(get_query)
+      const result = await r.json()
+
+      const all_nfts = result.data.nfts
+
+      const available = all_nfts.filter(n=>n.ownerWallet!=this.main_account)
+
+      return available
     },
 
     isSelected(nft_name) {
