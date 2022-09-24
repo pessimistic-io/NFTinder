@@ -3,13 +3,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const likeSchema = new Schema({
-    nft: {
+    nftOwn: {
         type: Schema.Types.ObjectId,
         ref: 'Nft'
     },
-    user: {
+    nftLike: {
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Nft'
     }
 });
 

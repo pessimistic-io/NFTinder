@@ -1,5 +1,4 @@
 const Nft = require('../../models/nft');
-const User = require('../../models/user');
 
 module.exports = {
   auth: async args => {
@@ -8,31 +7,23 @@ module.exports = {
         chainId: args.nftInput.chainId,
         collectionAddress: args.nftInput.collectionAddress,
         tokenId: args.nftInput.tokenId,
+        picUrl: args.nftInput.picUrl,
+        collectionName: args.nftInput.collectionName,
         ownerWallet: args.nftInput.ownerWallet,
       })
-      const user = await User.findOne({
-        wallet: args.userInput.wallet
-      });
-      if (user != null && !existingNft) {
-        return null;
-      }
-      if (existingNft && existingNft.ownerWallet == user.wallet) {
+      if (existingNft) {
         return existingNft;
       } else {
-        const user = new User({
-          wallet: args.userInput.wallet,
-        });
         const nft = new Nft({
           chainId: args.nftInput.chainId,
           collectionAddress: args.nftInput.collectionAddress,
           tokenId: args.nftInput.tokenId,
+          picUrl: args.nftInput.picUrl,
+          collectionName: args.nftInput.collectionName,
           ownerWallet: args.nftInput.ownerWallet,
         });
-        if (user.wallet == nft.ownerWallet) {
-          await user.save();
-          await nft.save();
-          return nft;
-        }
+        await nft.save();
+        return nft;
       }
     } catch (err) {
       throw err;

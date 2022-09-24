@@ -35,6 +35,14 @@
 import { ethers } from 'ethers';
 import Slider from '@/components/Slider';
 
+// const NFT_ABI = ['function approve(address _approved, uint256 _tokenId)']
+const NFT_ABI = [
+    'function approve(address, uint256)',
+    'function setApprovalForAll(address, bool)',
+    'function getApproved(uint256 tokenId) view returns (address)',
+    'function isApprovedForAll(address, address) view returns (bool)'
+  ]
+
 export default {
   name: 'Main',
   components: { Slider },
@@ -50,6 +58,7 @@ export default {
       bad_nfts: 0,
       selected_nft: "", // name
       quicknode_provider: {},
+      provider: {},
       nft_authorized: false,
       candidate_nfts: [{
         name: "awdw#1932",
@@ -85,6 +94,9 @@ export default {
     /* duplicates accounts watcher handler, because of "immediate: false" */
     this.updateMainAccount();
     await this.updateNfts();
+
+    this.provider = new ethers.providers.Web3Provider(window.ethereum)
+
   },
 
   watch: {
@@ -122,7 +134,7 @@ export default {
       }
 
       const nfts = await this.quicknode_provider.send("qn_fetchNFTs", {
-        wallet: this.target_account,
+        wallet: this.main_account,
         omitFields: ["traits", "provenance"],
         page: 1,
       });
@@ -136,14 +148,49 @@ export default {
 
     },
 
+    async sendQuery(q) {
+
+      return await fetch('http://localhost:3000/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query: q,
+          variables:{}
+        })
+      })
+    },
+
     async selectNft() {
 
       const s = this.normalized_selected_nft;
 
-      const query =
+
+      const contract = new ethers.Contract(s.collectionAddress, NFT_ABI, this.provider)
+          .connect(this.provider.getSigner())
+
+      const NFTinder = process.env.VUE_APP_NFTINDER_ADDRESS;
+      const approved_address = await contract.getApproved(s.tokenId);
+      let approved = approved_address === NFTinder;
+      console.log("Token %s is approved for NFTinder? %s", s.tokenId, approved)
+      if (!approved) {
+        approved = await contract.isApprovedForAll(this.main_account, NFTinder);
+        console.log("Collection %s is approved for NFTinder? %s", s.collectionAddress, approved)
+      }
+      if (!approved) {
+        const res = await contract.approve(NFTinder, s.tokenId);
+        if (res) {
+
+          alert('success')
+        } else {
+          // TODO
+        }
+      }
+
+      const auth_query =
       `mutation{
         auth(
-          userInput: {wallet: "${this.main_account}"},
           nftInput: {
             chainId: "${s.chainId}",
             collectionAddress: "${s.collectionAddress}",
@@ -152,28 +199,42 @@ export default {
           }
         ){chainId, collectionAddress, ownerWallet, tokenId}}`
 
-
-      // console.log(query)
-/*
-      const response = await fetch('http://localhost:3000/graphql', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          query: query,
-          variables:{}
-        })
-      });
+      const response = await this.sendQuery(auth_query)
 
       if (response.status==200){
-        alert('now you are ready for swiping')
+
+        const pics = await this.getAvilableNfts()
+        console.log(pics)
+
       } else {
         console.log(response)
         alert('error')
-      }*/
+      }
 
       this.nft_authorized = true;
+    },
+
+    async getAvilableNfts() {
+
+      const get_query =
+      `
+      query{
+        nfts{
+          chainId
+          collectionAddress
+          tokenId
+          ownerWallet
+        }
+      }`
+
+      const r = await this.sendQuery(get_query)
+      const result = await r.json()
+
+      const all_nfts = result.data.nfts
+
+      const available = all_nfts.filter(n=>n.ownerWallet!=this.main_account)
+
+      return available
     },
 
     isSelected(nft_name) {
