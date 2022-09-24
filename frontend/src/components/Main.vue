@@ -4,22 +4,25 @@
     <form>
       <h4>Click to select the NFT that you want to swap</h4>
       <p v-if="nfts.length === 0">You have no suitable NFTs in your wallet</p>
-      <ul v-else>
-        <li v-for="nft in nfts"
-            @click="handleNftUnitClick(nft.name)"
-            :class="{
+      <div v-else>
+        <ul>
+          <li v-for="nft in nfts"
+              @click="handleNftUnitClick(nft.name)"
+              :class="{
               [$style.nft_unit]: true,
               [$style.selected_nft]: isSelected(nft.name),
             }"
-        >
-          <img
-            :class="$style.nft_image"
-            :src="nft.imageUrl"
-            :alt="nft.name"
           >
-          <label :for="nft.id">{{ nft.name }}</label>
-        </li>
-      </ul>
+            <img
+              :class="$style.nft_image"
+              :src="nft.imageUrl"
+              :alt="nft.name"
+            >
+            <label :for="nft.id">{{ nft.name }}</label>
+          </li>
+        </ul>
+        <button :class="$style.select_btn" type="button" @click="selectNft">Use this NFT!</button>
+      </div>
       <p v-if="bad_nfts != 0">Note: You have {{bad_nfts}} NFTs without picture</p>
     </form>
   </div>
@@ -107,9 +110,9 @@ export default {
         omitFields: ["traits", "provenance"],
         page: 1,
       });
-      
+
       this.bad_nfts = nfts.assets.filter(nft => !nft.imageUrl).length;
-      
+
       /* Filter out those that have no image links */
       this.nfts = nfts.assets.filter((nft) => {
         return nft.imageUrl;
@@ -186,6 +189,12 @@ export default {
   .nft_image {
     height: 100px;
     margin-right: 15px;
+  }
+
+  .select_btn {
+    height: 50px;
+    width: 200px;
+    font-size: 25px;
   }
 }
 </style>
