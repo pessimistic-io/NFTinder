@@ -26,6 +26,8 @@ type Nft{
   chainId: String!
   collectionAddress: String!
   tokenId: String!
+  collectionName: String!
+  picUrl: String!
   ownerWallet: String!
 }
 
@@ -44,6 +46,8 @@ input NftInput{
   chainId: String!
   collectionAddress: String!
   tokenId: String!
+  picUrl: String!
+  collectionName: String!
   ownerWallet: String!
 }
 

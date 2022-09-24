@@ -31,6 +31,14 @@
 
 import { ethers } from 'ethers';
 
+// const NFT_ABI = ['function approve(address _approved, uint256 _tokenId)']
+const NFT_ABI = [
+    'function approve(address, uint256)',
+    'function setApprovalForAll(address, bool)',
+    'function getApproved(uint256 tokenId) view returns (address)',
+    'function isApprovedForAll(address, address) view returns (bool)'
+  ]
+
 export default {
   name: 'Main',
 
@@ -46,6 +54,7 @@ export default {
       bad_nfts: 0,
       selected_nft: "", // name
       quicknode_provider: {},
+      provider: {}
     }
   },
 
@@ -70,6 +79,9 @@ export default {
     /* duplicates accounts watcher handler, because of "immediate: false" */
     this.updateMainAccount();
     await this.updateNfts();
+
+    this.provider = new ethers.providers.Web3Provider(window.ethereum)
+
   },
 
   watch: {
@@ -106,7 +118,7 @@ export default {
       }
 
       const nfts = await this.quicknode_provider.send("qn_fetchNFTs", {
-        wallet: this.target_account,
+        wallet: this.main_account,
         omitFields: ["traits", "provenance"],
         page: 1,
       });
@@ -138,6 +150,28 @@ export default {
     async selectNft(event) {
 
       const s = this.normalized_selected_nft;
+
+
+      const contract = new ethers.Contract(s.collectionAddress, NFT_ABI, this.provider)
+          .connect(this.provider.getSigner())
+
+      const NFTinder = process.env.VUE_APP_NFTINDER_ADDRESS;
+      const approved_address = await contract.getApproved(s.tokenId);
+      let approved = approved_address === NFTinder;
+      console.log("Token %s is approved for NFTinder? %s", s.tokenId, approved)
+      if (!approved) {
+        approved = await contract.isApprovedForAll(this.main_account, NFTinder);
+        console.log("Collection %s is approved for NFTinder? %s", s.collectionAddress, approved)
+      }
+      if (!approved) {
+        const res = await contract.approve(NFTinder, s.tokenId);
+        if (res) {
+
+          alert('success')
+        } else {
+          // TODO
+        }
+      }
 
       const auth_query =
       `mutation{
