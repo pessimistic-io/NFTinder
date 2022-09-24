@@ -153,12 +153,38 @@ export default {
       const response = await this.sendQuery(auth_query)
 
       if (response.status==200){
-        alert('now you are ready for swiping')
+
+        const pics = await this.getAvilableNfts()
+        console.log(pics)
+
       } else {
         console.log(response)
         alert('error')
       }
 
+    },
+
+    async getAvilableNfts() {
+
+      const get_query =
+      `
+      query{
+        nfts{
+          chainId
+          collectionAddress
+          tokenId
+          ownerWallet
+        }
+      }`
+
+      const r = await this.sendQuery(get_query)
+      const result = await r.json()
+
+      const all_nfts = result.data.nfts
+
+      const available = all_nfts.filter(n=>n.ownerWallet!=this.main_account)
+
+      return available
     },
 
     isSelected(nft_name) {
