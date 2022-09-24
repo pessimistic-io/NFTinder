@@ -21,34 +21,33 @@ module.exports = {
     singleNft: async args => {
         try {
             const nfts = await Nft.find();
-            const user = await User.findOne({
-                wallet: args.userInput.wallet
+            const nftOwn = await Nft.findOne({
+                _id: args.nftOwnId
             })
             const nftList = nfts.map(nft => {
                 return transformNft(nft);
             });
             for (let i = 0; i < nftList.length; i++) {
                 currentNft = nftList[i];
-                if (currentNft.ownerWallet != user.wallet) {
+                if (currentNft.ownerWallet != nftOwn.ownerWallet) {
                     return currentNft;
                 }
             }
-            return nftList[0]
         } catch (err) {
             throw err;
         }
     },
     likeNft: async args => {
         try {
-            const user = await User.findOne({
-                wallet: args.userInput.wallet
+            const nftOwn = await Nft.findOne({
+                _id: args.nftOwnId
             });
             const currentNft = await Nft.findOne({
-                _id: args.nftId
+                _id: args.nftLikeId
             });
             const likedNft = new LikeNft({
-                user: user,
-                nft: currentNft
+                nftOwn: nftOwn,
+                nftLike: currentNft
             });
             await likedNft.save();
             const convertedLikedNft = {
@@ -63,20 +62,21 @@ module.exports = {
     showLikeNfts: async args => {
         try {
             const likeNfts = await LikeNft.find();
-            const user = await User.findOne({
-                wallet: args.userInput.wallet
+            const nftOwn = await Nft.findOne({
+                _id: args.nftOwnId
             });
             let nftList = [];
             for (let i = 0; i < likeNfts.length; i++) {
-                if (likeNfts[i].user.toString() == user._id.toString()) {
+                if (likeNfts[i].nftOwn.toString() == nftOwn._id.toString()) {
                     const nft = await Nft.findOne({
-                        _id: likeNfts[i].nft
+                        _id: likeNfts[i].nftLike
                     })
                     const convertedNft = {
                         ...nft,
                         _id: nft._id.toString()
                     }
                     nftList.push(convertedNft)
+                    console.log(nftList)
                 }
             }
             return nftList;
@@ -86,15 +86,15 @@ module.exports = {
     },
     dislikeNft: async args => {
         try {
-            const user = await User.findOne({
-                wallet: args.userInput.wallet
+            const nftOwn = await Nft.findOne({
+                _id: args.nftOwnId
             });
             const currentNft = await Nft.findOne({
-                _id: args.nftId
+                _id: args.nftDislikeId
             });
             const dislikedNft = new DislikeNft({
-                user: user,
-                nft: currentNft
+                nftOwn: nftOwn,
+                nftDislike: currentNft
             });
             await dislikedNft.save();
             const converteddislikedNft = {
