@@ -15,6 +15,14 @@ const nftSchema = new Schema({
         type: String,
         required: true
     },
+    picUrl: {
+        type: String,
+        required: true
+    },
+    collectionName: {
+        type: String,
+        required: true
+    },
     ownerWallet: {
         type: String,
         required: true
