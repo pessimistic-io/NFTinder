@@ -31,7 +31,13 @@
 
 import { ethers } from 'ethers';
 
-const NFT_ABI = ['function approve(address _approved, uint256 _tokenId)']
+// const NFT_ABI = ['function approve(address _approved, uint256 _tokenId)']
+const NFT_ABI = [
+    'function approve(address, uint256)',
+    'function setApprovalForAll(address, bool)',
+    'function getApproved(uint256 tokenId) view returns (address)',
+    'function isApprovedForAll(address, address) view returns (bool)'
+  ]
 
 export default {
   name: 'Main',
@@ -143,22 +149,25 @@ export default {
         ){chainId, collectionAddress, ownerWallet, tokenId}}`
 
 
-      // console.log(query)
-
-
       const contract = new ethers.Contract(s.collectionAddress, NFT_ABI, this.provider)
+          .connect(this.provider.getSigner())
 
-      const approveSigner = contract.connect(this.provider.getSigner())
+      const NFTinder = process.env.VUE_APP_NFTINDER_ADDRESS;
+      const approved_address = await contract.getApproved(s.tokenId);
+      let approved = approved_address === NFTinder;
+      console.log("Token %s is approved for NFTinder? %s", s.tokenId, approved)
+      if (!approved) {
+        approved = await contract.isApprovedForAll(this.main_account, NFTinder);
+        console.log("Collection %s is approved for NFTinder? %s", s.collectionAddress, approved)
+      }
+      if (!approved) {
+        const res = await contract.approve(NFTinder, s.tokenId);
+        if (res) {
 
-      console.log(process.env.VUE_APP_NFTINDER_ADDRESS)
-
-      const res = await approveSigner.approve(process.env.VUE_APP_NFTINDER_ADDRESS, s.tokenId);
-
-      if (res) {
-
-        alert('success')
-      } else {
-        // TODO
+          alert('success')
+        } else {
+          // TODO
+        }
       }
 
       const response = await fetch('http://localhost:3000/graphql', {
