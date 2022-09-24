@@ -120,11 +120,26 @@ export default {
 
     },
 
+    async sendQuery(q) {
+
+      return await fetch('http://localhost:3000/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query: q,
+          variables:{}
+        })
+      })
+    },
+
+
     async selectNft(event) {
 
       const s = this.normalized_selected_nft;
 
-      const query =
+      const auth_query =
       `mutation{
         auth(
           nftInput: {
@@ -135,19 +150,7 @@ export default {
           }
         ){chainId, collectionAddress, ownerWallet, tokenId}}`
 
-
-      // console.log(query)
-
-      const response = await fetch('http://localhost:3000/graphql', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          query: query,
-          variables:{}
-        })
-      });
+      const response = await this.sendQuery(auth_query)
 
       if (response.status==200){
         alert('now you are ready for swiping')
