@@ -219,7 +219,7 @@ export default {
       const get_query =
       `
       query{
-        nfts{
+        showUnseenNfts(user:"${this.main_account}"){
           chainId
           collectionAddress
           tokenId
@@ -230,11 +230,8 @@ export default {
       const r = await this.sendQuery(get_query)
       const result = await r.json()
 
-      const all_nfts = result.data.nfts
+      return result.data.showUnseenNfts
 
-      const available = all_nfts.filter(n=>n.ownerWallet!=this.main_account)
-
-      return available
     },
 
     isSelected(nft_name) {
