@@ -7,6 +7,8 @@ module.exports = {
         chainId: args.nftInput.chainId,
         collectionAddress: args.nftInput.collectionAddress,
         tokenId: args.nftInput.tokenId,
+        picUrl: args.nftInput.picUrl,
+        collectionName: args.nftInput.collectionName,
         ownerWallet: args.nftInput.ownerWallet,
       })
       if (existingNft) {
@@ -16,6 +18,8 @@ module.exports = {
           chainId: args.nftInput.chainId,
           collectionAddress: args.nftInput.collectionAddress,
           tokenId: args.nftInput.tokenId,
+          picUrl: args.nftInput.picUrl,
+          collectionName: args.nftInput.collectionName,
           ownerWallet: args.nftInput.ownerWallet,
         });
         await nft.save();
