@@ -11,8 +11,8 @@ type DislikeNft{
 
 type LikeNft{
   _id: ID!
-  nft: Nft!
-  user: User!
+  nftOwn: Nft!
+  nftLike: Nft!
 }
 
 type SignNft{
@@ -57,15 +57,15 @@ input SignatureInput{
 
 type RootQuery {
     nfts: [Nft!]
-    singleNft(userInput: UserInput!): Nft!
-    showLikeNfts(userInput: UserInput!): [Nft!]
+    singleNft(nftOwnId: ID!): Nft!
+    showLikeNfts(nftOwnId: ID!): [Nft!]
 }
 
 type RootMutation {
-    auth(nftInput: NftInput!, userInput: UserInput!): Nft!
+    auth(nftInput: NftInput!): Nft!
     addNft(nftInput: NftInput!): Nft!
-    likeNft(nftId: ID!, userInput: UserInput!): LikeNft!
-    dislikeNft(nftId: ID!, userInput: UserInput!): DislikeNft!
+    likeNft(nftLikeId: ID!, nftOwnId: ID!): LikeNft!
+    dislikeNft(nftDislikeId: ID!, nftOwnId: ID!): DislikeNft!
     signNfts(nftIds: [ID!], signature: SignatureInput!): Signature!
     saveSignature(signId: SignatureInput!): Signature!
     clearUserData(userInput: ID!, nftInput: ID!): User!
