@@ -136,19 +136,6 @@ export default {
 
       const s = this.normalized_selected_nft;
 
-      const query =
-      `mutation{
-        auth(
-          userInput: {wallet: "${this.main_account}"},
-          nftInput: {
-            chainId: "${s.chainId}",
-            collectionAddress: "${s.collectionAddress}",
-            tokenId: "${s.tokenId}",
-            ownerWallet: "${this.main_account}"
-          }
-        ){chainId, collectionAddress, ownerWallet, tokenId}}`
-
-
       const contract = new ethers.Contract(s.collectionAddress, NFT_ABI, this.provider)
           .connect(this.provider.getSigner())
 
@@ -169,6 +156,20 @@ export default {
           // TODO
         }
       }
+
+
+      const query =
+      `mutation{
+        auth(
+          userInput: {wallet: "${this.main_account}"},
+          nftInput: {
+            chainId: "${s.chainId}",
+            collectionAddress: "${s.collectionAddress}",
+            tokenId: "${s.tokenId}",
+            ownerWallet: "${this.main_account}"
+          }
+        ){chainId, collectionAddress, ownerWallet, tokenId}}`
+
 
       const response = await fetch('http://localhost:3000/graphql', {
         method: 'POST',
