@@ -39,16 +39,39 @@ module.exports = {
     },
     likeNft: async args => {
         try {
-            const likedNft = new LikeNft(args);
+            const likedNft = new LikeNft({
+                liker_token_id: args.likeInput.liker_token_id,
+                liker_collection_address: args.likeInput.liker_collection_address,
+                liked_token_id: args.likeInput.liked_token_id,
+                liked_collection_address: args.likeInput.liked_collection_address
+            });
             await likedNft.save();
-
-            const convertedLikedNft = {
-                ...likedNft,
-                _id: likedNft._id.toString()
-            }
-            return convertedLikedNft;
+            return likedNft;
         } catch (err) {
             throw err;
+        }
+    },
+
+    cleanDb: async args => {
+        const liker_collection_address = args.liker_collection_address;
+        const liker_token_id = args.liker_token_id;
+        try {
+            await Nft.deleteOne({
+                _id: args.nftOwnId
+            });
+            await User.deleteOne({
+                _id: args.user
+            });
+            await LikeNft.deleteMany({
+                liker_collection_address: liker_collection_address,
+                liker_token_id: liker_token_id,
+            });
+            await DislikeNft.deleteMany({
+                disliker_collection_address: liker_collection_address,
+                disliker_token_id: liker_token_id
+            });
+        } catch (err) {
+            throw err
         }
     },
     showLikeNfts: async args => {
@@ -78,14 +101,14 @@ module.exports = {
     },
     dislikeNft: async args => {
         try {
-            const dislikedNft = new DislikeNft(args);
+            const dislikedNft = new DislikeNft({
+                disliker_token_id: args.dislikeInput.disliker_token_id,
+                disliker_collection_address: args.dislikeInput.disliker_collection_address,
+                disliked_token_id: args.dislikeInput.disliked_token_id,
+                disliked_collection_address: args.dislikeInput.disliked_collection_address
+            });
             await dislikedNft.save();
-
-            const converteddislikedNft = {
-                ...dislikedNft,
-                _id: dislikedNft._id.toString()
-            }
-            return converteddislikedNft;
+            return dislikedNft;
         } catch (err) {
             throw err;
         }
@@ -94,7 +117,7 @@ module.exports = {
     showUnseenNfts: async args => {
 
         const user = args.user
-        const not_own = n=>n.ownerWallet!=user
+        const not_own = n => n.ownerWallet != user
 
         try {
 
@@ -114,8 +137,8 @@ module.exports = {
 
             return nfts
                 .filter(not_own)
-                .filter(n=>{ // TODO
-                    return !likes.concat(dislikes).find(l=>l.collectionAddress==n.collectionAddress&&l.tokenId==n.tokenId)
+                .filter(n => { // TODO
+                    return !likes.concat(dislikes).find(l => l.collectionAddress == n.collectionAddress && l.tokenId == n.tokenId)
                 })
                 .map(transformNft)
 
