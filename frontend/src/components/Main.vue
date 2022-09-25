@@ -315,6 +315,10 @@ export default {
 
 .Main {
 
+  text-align: center;
+  margin: auto;
+  width: 50%;
+
   .account_title {
     font-size: 14px;
     color: #afafaf;
