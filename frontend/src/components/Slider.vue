@@ -59,6 +59,8 @@ export default {
     async handleDecision(decision) {
       if(decision === "like") {
         await this.sendLike();
+
+        await this.fetchMatch();
       }
       else {
         await this.sendDislike();
@@ -83,6 +85,20 @@ export default {
     cutQueue() {
       // Delete 1st NFT
       this.queue = this.queue.length > 1 ? this.queue.slice(1) : [];
+    },
+
+
+    asyncFetchMatch() {
+
+      const q=
+      `queue{
+        findMatch(
+          collectionAddress:"${this.user_nft.collectionAddress}",
+          tokenId: "${this.user_nft.collectionTokenId}"
+        )
+      }`
+
+      console.log(q)
     },
 
     async sendLike() {

@@ -123,5 +123,44 @@ module.exports = {
             throw err;
         }
 
+    },
+
+    findMatch: async args => {
+
+        const is_match = my=>yours=> {
+            return my.liked_token_id == yours.liker_token_id
+        && my.liked_collection_address == yours.liked_collection_address
+        }
+
+        try {
+
+            const we_like = await LikeNft.find({
+                liker_collection_address: args.collectionAddress,
+                liker_token_id: args.tokenId
+            })
+            const us_like = await LikeNft.find({
+                liked_collection_address: args.collectionAddress,
+                liked_token_id: args.tokenId
+            })
+
+            const match = we_like.find(we=>{
+                return us_like.find(is_match(we));
+            })
+
+            if (!match) return ['','','','']
+
+            console.log('MATCH');
+            console.log(match);
+
+            return [
+                match.liker_collection_address,
+                match.liker_token_id,
+                match.liked_collection_address,
+                match.liked_token_id
+            ]
+
+        } catch (err) {
+            throw err;
+        }
     }
 }
