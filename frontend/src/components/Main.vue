@@ -134,10 +134,56 @@ export default {
       this.bad_nfts = nfts.assets.filter(nft => !nft.imageUrl).length;
 
       /* Filter out those that have no image links */
-      this.nfts = nfts.assets /*.filter((nft) => {
-        return nft.imageUrl;
-      });//*/ // TODO: вернуть
+      this.nfts = nfts.assets
+          .filter((nft) => { return nft.imageUrl; });
+    },
 
+    /*
+      nft - "selected nft" object.
+      nfts - list of liked nfts from the database
+    */
+    async signNfts(nft, nfts) {
+      const network = await this.provider.getNetwork()
+      const domain = {
+        name: 'NFTinder',
+        version: '0.1',
+        chainId: network.chainId,
+        verifyingContract: process.env.VUE_APP_NFTINDER_ADDRESS
+      }
+
+      const types = {
+        EIP712Domain: [
+          { name: 'name', type: 'string' },
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' },
+          { name: 'verifyingContract', type: 'address' },
+        ],
+        NFT: [
+          { name: 'collection', type: 'address' },
+          { name: 'tokenId', type: 'uint256' }
+        ],
+        Order: [
+          { name: 'nft', type: 'NFT' },
+          { name: 'nfts', type: 'NFT[]' }
+        ]
+      }
+
+      const message = {
+        nft: {collection: nft.collectionAddress, tokenId: nft.tokenId},
+        nfts: []
+      }
+      message.nfts = nfts.map(function(nft) {return { collection: nft.collectionAddress, tokenId: nft.collectionTokenId }})
+      //   console.log(Order)
+      const primaryType = "Order"
+      const TypedMessage = {
+        domain,
+        types,
+        message,
+        primaryType
+      };
+
+      const sig = await this.provider.send('eth_signTypedData_v4', [this.main_account, JSON.stringify(TypedMessage)]);
+      console.log("TypedMessage signature: %s", sig)
     },
 
     async sendQuery(q) {
@@ -179,6 +225,8 @@ export default {
           // TODO
         }
       }
+
+      this.signNfts(this.normalized_selected_nft, this.nfts)
 
       const auth_query =
       `mutation{
@@ -227,6 +275,7 @@ export default {
       const result = await r.json()
 
       return result.data.showUnseenNfts
+
     },
 
     isSelected(nft_name) {
