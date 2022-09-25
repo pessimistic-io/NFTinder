@@ -53,14 +53,14 @@ module.exports = {
     },
 
     cleanDb: async args => {
-        const liker_collection_address = args.liker_collection_address;
-        const liker_token_id = args.liker_token_id;
+        const liker_collection_address = args.likeInput.liker_collection_address;
+        const liker_token_id = args.likeInput.liker_token_id;
         try {
-            await Nft.deleteOne({
+            const nft = await Nft.findOne({
                 _id: args.nftOwnId
             });
-            await User.deleteOne({
-                _id: args.user
+            await Nft.deleteOne({
+                _id: args.nftOwnId
             });
             await LikeNft.deleteMany({
                 liker_collection_address: liker_collection_address,
@@ -70,6 +70,8 @@ module.exports = {
                 disliker_collection_address: liker_collection_address,
                 disliker_token_id: liker_token_id
             });
+            console.log(nft)
+            return nft
         } catch (err) {
             throw err
         }

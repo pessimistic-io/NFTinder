@@ -65,17 +65,17 @@ input SignatureInput{
 }
 
 input LikeInput {
-  liker_collection_address: String!
-  liker_token_id: String!
-  liked_collection_address: String!
-  liked_token_id: String!
+  liker_collection_address: String
+  liker_token_id: String
+  liked_collection_address: String
+  liked_token_id: String
 }
 
 input DislikeInput {
-  disliker_collection_address: String!
-  disliker_token_id: String!
-  disliked_collection_address: String!
-  disliked_token_id: String!
+  disliker_collection_address: String
+  disliker_token_id: String
+  disliked_collection_address: String
+  disliked_token_id: String
 }
 
 type RootQuery {
@@ -93,7 +93,7 @@ type RootMutation {
     dislikeNft(dislikeInput: DislikeInput!): Dislike!
     signNfts(nftIds: [ID!], signature: SignatureInput!): Signature!
     saveSignature(signId: SignatureInput!): Signature!
-    clearUserData(userInput: ID!, nftInput: ID!): User!
+    cleanDb(nftOwnId: ID!, likeInput: LikeInput): Nft!
 }
 
 schema {
