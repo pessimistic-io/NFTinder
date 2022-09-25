@@ -77,6 +77,10 @@ export default {
     width: 100%;
   }
 
+  .nft_label {
+    overflow: hidden;
+  }
+
   .button {
     width: 100%;
     font-size: 18px;
