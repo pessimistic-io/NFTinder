@@ -24,9 +24,13 @@ export default {
     }
   },
 
+  computed: {
+    current() {return this.queue[0]}
+  },
+
   props: {
     candidate_nfts: Array(0),
-    user: ''
+    selected: {}
   },
 
   created() {
@@ -70,23 +74,41 @@ export default {
 
     async sendLike() {
 
-      // console.log(this.queue[0])
-
-
-
-      // const q =
-      // `mutation{
-      //   likeNft(nftOwnId: "${this.$props.user}", nftLikeId: "${this.queue[0]._id}"){_id}}
-      // }
-      // `
+      const q =
+      `mutation{
+        likeNft(likeInput:{
+          liker_collection_address: "${this.$props.selected.collectionAddress}",
+          liker_token_id: "${this.$props.selected.tokenId}",
+          liked_collection_address: "${this.current.collectionAddress}",
+          liked_token_id: "${this.current.tokenId}"
+        }) {
+          collectionName
+          picUrl
+          }
+        }`
 
       // console.log(q)
-      // const r = await this.sendQuery(q)
+      const r = await this.sendQuery(q)
       // console.log(r)
 
     },
 
     async sendDislike() {
+
+      const q =
+      `mutation{
+        dislikeNft(dislikeInput:{
+          disliker_collection_address: "${this.$props.selected.collectionAddress}",
+          disliker_token_id: "${this.$props.selected.tokenId}",
+          disliked_collection_address: "${this.current.collectionAddress}",
+          disliked_token_id: "${this.current.tokenId}"
+        }) {
+          collectionName
+          picUrl
+          }
+        }`
+
+        const r = await this.sendQuery(q)
 
     }
   }

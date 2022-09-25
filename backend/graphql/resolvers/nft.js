@@ -39,17 +39,9 @@ module.exports = {
     },
     likeNft: async args => {
         try {
-            const nftOwn = await Nft.findOne({
-                _id: args.nftOwnId
-            });
-            const currentNft = await Nft.findOne({
-                _id: args.nftLikeId
-            });
-            const likedNft = new LikeNft({
-                nftOwn: nftOwn,
-                nftLike: currentNft
-            });
+            const likedNft = new LikeNft(args);
             await likedNft.save();
+
             const convertedLikedNft = {
                 ...likedNft,
                 _id: likedNft._id.toString()
@@ -86,17 +78,9 @@ module.exports = {
     },
     dislikeNft: async args => {
         try {
-            const nftOwn = await Nft.findOne({
-                _id: args.nftOwnId
-            });
-            const currentNft = await Nft.findOne({
-                _id: args.nftDislikeId
-            });
-            const dislikedNft = new DislikeNft({
-                nftOwn: nftOwn,
-                nftDislike: currentNft
-            });
+            const dislikedNft = new DislikeNft(args);
             await dislikedNft.save();
+
             const converteddislikedNft = {
                 ...dislikedNft,
                 _id: dislikedNft._id.toString()
@@ -115,27 +99,25 @@ module.exports = {
         try {
 
             const nfts = await Nft.find()
-            const likes = await LikeNft
-                .find()
-                .populate('nftOwn')
-                .populate('nftLike')
-                .exec();
-            const dislikes = await DislikeNft
-                .find()
-                .populate('nft')
-                .populate('user')
-                .exec();
+            const likes = await LikeNft.find({
+                liker_collection_address: args.collectionAddress,
+                liker_token_id: args.tokenId
+            })
+            const dislikes = await DislikeNft.find({
+                disliker_collection_address: args.collectionAddress,
+                disliker_token_id: args.tokenId
+            })
+
 
             // console.log(likes)
-            // console.log(nfts)
 
-            // const not_liked = n=>likes.find(l=>l.nftOwn.collectionAddress==)
 
             return nfts
                 .filter(not_own)
+                .filter(n=>{ // TODO
+                    return !likes.concat(dislikes).find(l=>l.collectionAddress==n.collectionAddress&&l.tokenId==n.tokenId)
+                })
                 .map(transformNft)
-                // .filter(not_liked)
-                // .filter(not_disliked)
 
         } catch (err) {
             throw err;

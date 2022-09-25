@@ -27,7 +27,7 @@
         <p v-if="bad_nfts != 0">Note: You have {{bad_nfts}} NFTs without picture</p>
       </form>
     </div>
-    <Slider v-else :candidate_nfts="candidate_nfts" :user="main_account"/>
+    <Slider v-else :candidate_nfts="candidate_nfts" :selected="normalized_selected_nft"/>
   </div>
 </template>
 <script>
@@ -195,9 +195,9 @@ export default {
 
       const response = await this.sendQuery(auth_query)
 
-      const r = await response.json()
+      // const r = await response.json()
 
-      console.log(r)
+      // console.log(r)
 
       if (response.status==200){
 
@@ -214,10 +214,12 @@ export default {
 
     async getAvailableNfts() {
 
+      const s = this.normalized_selected_nft
+
       const get_query =
       `
       query{
-        showUnseenNfts(user:"${this.main_account}"){
+        showUnseenNfts(user:"${this.main_account}", collectionAddress:"${s.collectionAddress}", tokenId: "${s.tokenId}") {
           picUrl
           chainId
           collectionName
