@@ -77,11 +77,20 @@ export default {
 
       const sq = await this.sendQuery(q)
 
-      const signs = await sq.json()
+      const data_s = await sq.json()
 
-      console.log(signs)
+      const sign = data_s.data.getSignature;
 
-      // TODO: get order, calculate index, get signature
+      if (!sign) {
+        console.log('signature error!')
+        return;
+      }
+
+      const {message, signature} = JSON.parse(sign)
+
+      // d.message
+
+      // TODO: get order, calculate index
 
       // contract.swap()
 

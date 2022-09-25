@@ -71,7 +71,7 @@ export default {
       if(decision === "like") {
         await this.sendLike();
 
-        // await this.fetchMatch();
+        await this.fetchMatch();
       }
       else {
         await this.sendDislike();
