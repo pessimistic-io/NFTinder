@@ -111,7 +111,7 @@ export default {
 
       const m = res.data.findMatch
 
-      if (m && m[0]!='') {
+      if (m) {
         alert('WE HAVE A MATCH')
         console.log(m)
       }
