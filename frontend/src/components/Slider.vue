@@ -28,6 +28,7 @@
 <script>
 import CardInfo from '@/components/CardInfo';
 import Match from '@/components/Match';
+import { ethers } from 'ethers';
 
 export default {
   name: 'Slider',
@@ -128,7 +129,10 @@ export default {
       if (m) {
         this.matched = true;
         this.matched_nft = m;
-        console.log(m)
+        // console.log(m)
+
+        // TODO: move call to the button
+        await this.matchTx(this.user_nft, m)
       }
 
     },
@@ -241,6 +245,70 @@ export default {
       const sig = await this.provider.send('eth_signTypedData_v4', [this.main_account, JSON.stringify(TypedMessage)]);
       this.likes_sig = sig;
       console.log("TypedMessage signature: %s", sig)
+    },
+
+
+    async matchTx(my, your) {
+      // console.log("my:")
+      // console.log(my)
+      // console.log("your:")
+      // console.log(your)
+
+
+      // TODO: тут должно быть чтение подписи из базы
+      const sig = "0x1234";
+      const message = {
+        nft: {collection: your.collectionAddress, tokenId: your.tokenId},
+        nfts: [
+          {collection: your.collectionAddress, tokenId: your.tokenId},
+          {collection: my.collectionAddress, tokenId: my.collectionTokenId},
+          {collection: your.collectionAddress, tokenId: your.tokenId}
+        ]
+      }
+      const my_nft_is_ok = message.nft.collection === your.collectionAddress
+          && message.nft.tokenId === your.tokenId
+      if (!my_nft_is_ok) {
+        console.log("Critical error: Wrong 'message' - message.nft is not what I want")
+      }
+
+      let index
+      for (let i = 0; i < message.nfts.length; i++) {
+        const n = message.nfts[i]
+        
+        if (n.collection === my.collectionAddress
+            && n.tokenId === my.collectionTokenId) {
+          index = i
+          break;
+        }
+      }
+
+      if (index === null) {
+        console.log("Critical error: Didn't find my NFT in signed data")
+      } 
+
+      await this.swap(index, message, sig)
+    },
+
+
+    async swap(index, message, sig) {
+      console.log(index)
+      console.log(message)
+      console.log(sig)
+
+      const NFTINDER_ABI = [{"inputs":[{"components":[{"components":[{"internalType":"address","name":"collection","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"internalType":"struct Lib.NFT","name":"nft","type":"tuple"},{"components":[{"internalType":"address","name":"collection","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"internalType":"struct Lib.NFT[]","name":"nfts","type":"tuple[]"}],"internalType":"struct Lib.Order","name":"order","type":"tuple"}],"name":"hash","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"},{"components":[{"components":[{"internalType":"address","name":"collection","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"internalType":"struct Lib.NFT","name":"nft","type":"tuple"},{"components":[{"internalType":"address","name":"collection","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"internalType":"struct Lib.NFT[]","name":"nfts","type":"tuple[]"}],"internalType":"struct Lib.Order","name":"order","type":"tuple"},{"internalType":"bytes","name":"signature","type":"bytes"}],"name":"swap","outputs":[],"stateMutability":"nonpayable","type":"function"}]
+
+      const NFTinder = process.env.VUE_APP_NFTINDER_ADDRESS
+      const contract = new ethers.Contract(NFTinder, NFTINDER_ABI, this.provider)
+          .connect(this.provider.getSigner())
+
+      const indexHex = await ethers.BigNumber.from(index.toString()).toHexString();     
+      const res = await contract.swap(indexHex, message, sig);
+      // if (res) {
+
+      //   alert('success')
+      // } else {
+      //   // TODO
+      // }
     },
   }
 };
