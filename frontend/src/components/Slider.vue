@@ -103,10 +103,12 @@ export default {
 
       const q=
       `query{
-        findMatch(
-          collectionAddress:"${this.user_nft.collectionAddress}",
-          tokenId: "${this.user_nft.collectionTokenId}"
-        ){
+        findMatch(likeInput:{
+          liker_collection_address: "${this.user_nft.collectionAddress}",
+          liker_token_id: "${this.user_nft.collectionTokenId}",
+          liked_collection_address: "${this.current.collectionAddress}",
+          liked_token_id: "${this.current.tokenId}"
+        }){
           picUrl
           chainId
           collectionName
