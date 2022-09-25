@@ -152,6 +152,25 @@ module.exports = {
 
     findMatch: async args => {
 
+        const mutual = await LikeNft.findOne({
+            liker_collection_address: args.likeInput.liked_collection_address,
+            liker_token_id: args.likeInput.liked_token_id,
+            liked_collection_address: args.likeInput.liker_collection_address,
+            liked_token_id: args.likeInput.liker_token_id
+        })
+
+        if (!mutual) return null
+
+        const res = Nft.findOne({
+            collectionAddress: mutual.liker_collection_address,
+            tokenId: mutual.liker_token_id
+        })
+
+        return res
+
+    },
+    findMatchAll: async args => {
+
         // const is_match = my=>yours=> {
         //     return my.liked_token_id == yours.liker_token_id
         // && my.liked_collection_address == yours.liked_collection_address
