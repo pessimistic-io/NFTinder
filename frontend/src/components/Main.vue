@@ -1,9 +1,9 @@
 <template>
   <div :class="$style.Main">
     <div v-if="!nft_authorized">
-      <h3>Your account: {{ main_account }}</h3>
+      <h3 :class="$style.account_title">Your account: {{ main_account }}</h3>
       <form>
-        <h4>Click to select the NFT that you want to swap</h4>
+        <h2 :class="$style.select_title">Click to select the NFT that you want to swap</h2>
         <p v-if="nfts.length === 0">You have no suitable NFTs in your wallet</p>
         <div v-else>
           <ul>
@@ -17,12 +17,21 @@
               <img
                 :class="$style.nft_image"
                 :src="nft.imageUrl"
-                :alt="nft.name"
+                alt=""
               >
               <label :class="$style.nft_label" :for="nft.id">{{ nft.name }}</label>
             </li>
           </ul>
-          <button :class="$style.select_btn" type="button" @click="selectNft">Use this NFT!</button>
+          <div :class="$style.select_btn_block">
+            <button
+              :class="$style.select_btn"
+              type="button"
+              @click="selectNft"
+            >
+              Let's go
+            </button>
+            <p :class="$style.select_label">({{ selected_nft }} will be automatically swapped after a mutual like)</p>
+          </div>
         </div>
         <p v-if="bad_nfts != 0">Note: You have {{bad_nfts}} NFTs without picture</p>
       </form>
@@ -91,6 +100,7 @@ export default {
     /* duplicates accounts watcher handler, because of "immediate: false" */
     this.updateMainAccount();
     await this.updateNfts();
+    this.updateDefaultSelectedNft();
 
     this.provider = new ethers.providers.Web3Provider(window.ethereum)
 
@@ -141,6 +151,10 @@ export default {
       /* Filter out those that have no image links */
       this.nfts = nfts.assets
           .filter((nft) => { return nft.imageUrl; });
+    },
+
+    updateDefaultSelectedNft() {
+      this.selected_nft = this.nfts[0].name;
     },
 
     async sendQuery(q) {
@@ -250,12 +264,22 @@ export default {
 
 .Main {
 
+  .account_title {
+    font-size: 14px;
+    color: #afafaf;
+  }
+
+  .select_title {
+    margin-top: 50px;
+    padding-left: 40px;
+  }
+
   .nft_unit {
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
     height: 100px;
     cursor: pointer;
+    padding: 20px 0 20px 80px;
   }
 
   .selected_nft {
@@ -271,10 +295,23 @@ export default {
     cursor: pointer;
   }
 
+  .select_btn_block {
+    padding: 25px 0 0 40px;
+  }
+
   .select_btn {
     height: 50px;
-    width: 200px;
-    font-size: 25px;
+    font-size: 20px;
+    padding: 5px 50px;
+    background-color: green;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .select_label {
+    font-size: 14px;
+    color: #6464d0;
   }
 }
 </style>
