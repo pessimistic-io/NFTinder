@@ -20,8 +20,6 @@ export default {
 <style lang="scss" module>
 
 .Card {
-  height: 280px;
-  width: 200px;
   display: flex;
   flex-direction: column;
   justify-content: end;

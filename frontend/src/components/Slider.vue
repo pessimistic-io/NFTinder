@@ -14,7 +14,7 @@
       <button v-if="liked_nfts.length !== 0"
               :class="$style.sign_btn"
               @click="signNewLikes"
-      >Sign New Likes</button>
+      >Sign likes</button>
     </div>
   </div>
 </template>
@@ -228,6 +228,12 @@ export default {
 <style lang="scss" module>
 
 .Slider {
+  height: 380px;
+  width: 200px;
+  padding: 15px 10px;
+  background-color: silver;
+  box-shadow: 0 0 0 3px silver, 1em 1em 3px 0 rgb(0 0 0 / 50%);
+  border: 6px double #fff;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -246,7 +252,8 @@ export default {
 
   .decision_button {
     width: 45%;
-    height: 30px;
+    font-size: 22px;
+    padding: 5px 0;
   }
 
   .like_button {
@@ -254,7 +261,8 @@ export default {
   }
 
   .sign_btn {
-    font-size: 30px;
+    width: 100%;
+    font-size: 18px;
   }
 }
 
