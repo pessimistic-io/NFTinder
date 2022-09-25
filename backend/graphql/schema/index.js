@@ -20,6 +20,22 @@ type Nft{
   ownerWallet: String!
 }
 
+type Like {
+  _id: ID!
+  liker_collection_address: String!
+  liker_token_id: String!
+  liked_collection_address: String!
+  liked_token_id: String!
+}
+
+type Dislike {
+  _id: ID!
+  disliker_collection_address: String!
+  disliker_token_id: String!
+  disliked_collection_address: String!
+  disliked_token_id: String!
+}
+
 type User{
   _id: ID!
   wallet: String!
@@ -48,17 +64,17 @@ input SignatureInput{
   signature: String!
 }
 
-input Like {
-  liker_collection_address: String!,
-  liker_token_id: String!,
-  liked_collection_address: String!,
+input LikeInput {
+  liker_collection_address: String!
+  liker_token_id: String!
+  liked_collection_address: String!
   liked_token_id: String!
 }
 
-input Dislike {
-  disliker_collection_address: String!,
-  disliker_token_id: String!,
-  disliked_collection_address: String!,
+input DislikeInput {
+  disliker_collection_address: String!
+  disliker_token_id: String!
+  disliked_collection_address: String!
   disliked_token_id: String!
 }
 
@@ -73,8 +89,8 @@ type RootQuery {
 type RootMutation {
     auth(nftInput: NftInput!): Nft!
     addNft(nftInput: NftInput!): Nft!
-    likeNft(likeInput: Like!): Nft!
-    dislikeNft(dislikeInput: Dislike!): Nft!
+    likeNft(likeInput: LikeInput!): Like!
+    dislikeNft(dislikeInput: DislikeInput!): Dislike!
     signNfts(nftIds: [ID!], signature: SignatureInput!): Signature!
     saveSignature(signId: SignatureInput!): Signature!
     clearUserData(userInput: ID!, nftInput: ID!): User!
