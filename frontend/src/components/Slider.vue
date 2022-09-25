@@ -88,7 +88,7 @@ export default {
     },
 
 
-    asyncFetchMatch() {
+    async fetchMatch() {
 
       const q=
       `queue{
@@ -98,7 +98,15 @@ export default {
         )
       }`
 
-      console.log(q)
+      const r = await this.sendQuery(q)
+
+      const res = await r.json()
+
+      if (res[0]!='') {
+        alert('WE HAVE A MATCH')
+        console.log(res)
+      }
+
     },
 
     async sendLike() {
@@ -111,12 +119,14 @@ export default {
           liked_collection_address: "${this.current.collectionAddress}",
           liked_token_id: "${this.current.tokenId}"
         }) {
-          collectionName
-          picUrl
+            liker_collection_address
+            liker_token_id
+            liked_collection_address
+            liked_token_id
           }
         }`
 
-      // console.log(q)
+      console.log(q)
       const r = await this.sendQuery(q)
       // console.log(r)
 
@@ -135,8 +145,10 @@ export default {
           disliked_collection_address: "${this.current.collectionAddress}",
           disliked_token_id: "${this.current.tokenId}"
         }) {
-          collectionName
-          picUrl
+            disliker_collection_address
+            disliker_token_id
+            disliked_collection_address
+            disliked_token_id
           }
         }`
 
