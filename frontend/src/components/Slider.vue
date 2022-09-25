@@ -1,30 +1,39 @@
 <template>
-  <div :class="$style.Slider">
-    <div :class="$style.card">
-    <!--   Show a card if the pool is not empty -->
-      <div v-if="queue.length !== 0">
-        <CardInfo :nft="queue[0]"/>
-        <div :class="$style.decision_block">
-          <button @click="handleDecision('like')" :class="[$style.like_button, $style.decision_button]">Like</button>
-          <button @click="handleDecision('dislike')" :class="[$style.dislike_button, $style.decision_button]">Nope</button>
+  <div>
+    <div v-if="!matched" :class="$style.Slider">
+      <div :class="$style.card">
+        <!--   Show a card if the pool is not empty -->
+        <div v-if="queue.length !== 0">
+          <CardInfo :nft="queue[0]"/>
+          <div :class="$style.decision_block">
+            <button @click="handleDecision('like')" :class="[$style.like_button, $style.decision_button]">Like</button>
+            <button @click="handleDecision('dislike')" :class="[$style.dislike_button, $style.decision_button]">Nope</button>
+          </div>
         </div>
-      </div>
-      <h3 v-else>NFT pool is empty</h3>
+        <h3 v-else>NFT pool is empty</h3>
 
-      <button v-if="liked_nfts.length !== 0"
-              :class="$style.sign_btn"
-              @click="signNewLikes"
-      >Sign likes</button>
+        <button v-if="liked_nfts.length !== 0"
+                :class="$style.sign_btn"
+                @click="signNewLikes"
+        >Sign likes</button>
+      </div>
     </div>
+    <Match
+      v-else
+      :user_nft="user_nft"
+      :liked_nft="matched_nft"
+    />
   </div>
 </template>
 <script>
 import CardInfo from '@/components/CardInfo';
+import Match from '@/components/Match';
 
 export default {
   name: 'Slider',
 
   components: {
+    Match,
     CardInfo,
   },
 
@@ -33,6 +42,8 @@ export default {
       queue: Array(0),
       liked_nfts: Array(0),
       likes_sig: "",
+      matched: false,
+      matched_nft: {},
     }
   },
 
@@ -111,8 +122,10 @@ export default {
 
       const m = res.data.findMatch
 
+      // Have a match
       if (m) {
-        alert('WE HAVE A MATCH')
+        this.matched = true;
+        this.matched_nft = this.current;
         console.log(m)
       }
 
@@ -243,10 +256,7 @@ export default {
   background-color: silver;
   box-shadow: 0 0 0 3px silver, 1em 1em 3px 0 rgb(0 0 0 / 50%);
   border: 6px double #fff;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  margin: 150px auto;
 
   .decision_img {
     height: 100%;
