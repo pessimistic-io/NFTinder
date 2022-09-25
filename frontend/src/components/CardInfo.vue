@@ -26,11 +26,16 @@ export default {
 
   .imgBlock {
     overflow: hidden;
-    height: 80%;
+    height: 200px;
+    width: 100%;
+    position: relative;
     margin-bottom: 10px;
   }
 
   .image {
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 100%;
   }
 

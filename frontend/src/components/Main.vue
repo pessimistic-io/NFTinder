@@ -133,7 +133,7 @@ export default {
       if(!this.main_account) {
         throw "User account is not set: unable to update nfts";
       }
-      
+
       const np = await this.askNftPort(this.main_account)
       const qn = await this.askQuickNode(this.main_account)
       const nfts = np.concat(qn)
@@ -171,7 +171,7 @@ export default {
     },
 
     async askNftPort(account) {
-      const api = 'https://api.nftport.xyz/v0/accounts/' + account 
+      const api = 'https://api.nftport.xyz/v0/accounts/' + account
           + '?chain=ethereum&include=metadata&include=contract_information&exclude=erc1155'
       const response = await fetch(api, {
         method: 'GET',

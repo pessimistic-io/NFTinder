@@ -120,7 +120,7 @@ export default {
 
       const res = await r.json()
 
-      const m = res.data.findMatch
+      const m = await res.data.findMatch
 
       // Have a match
       if (m) {
@@ -148,10 +148,7 @@ export default {
           }
         }`
 
-      console.log(q)
       const r = await this.sendQuery(q)
-      // console.log(r)
-
 
       // like queue[0]
       this.liked_nfts.push(this.queue[0]);
@@ -250,9 +247,9 @@ export default {
 <style lang="scss" module>
 
 .Slider {
-  height: 380px;
+  height: 350px;
   width: 200px;
-  padding: 15px 10px;
+  padding: 25px 20px;
   background-color: silver;
   box-shadow: 0 0 0 3px silver, 1em 1em 3px 0 rgb(0 0 0 / 50%);
   border: 6px double #fff;
@@ -271,12 +268,20 @@ export default {
 
   .decision_button {
     width: 45%;
-    font-size: 22px;
+    font-size: 20px;
     padding: 5px 0;
+    cursor: pointer;
   }
 
   .like_button {
     margin-right: 10px;
+    color: #fff;
+    background-color: green;
+  }
+
+  .dislike_button {
+    background-color: grey;
+    color: #fff;
   }
 
   .sign_btn {
