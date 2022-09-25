@@ -184,7 +184,7 @@ export default {
       `mutation{
         auth(
           nftInput: {
-            picUrl: "${s.imageUrl}",
+            picUrl: "${s.picUrl}",
             collectionName: "${s.collectionName}",
             chainId: "${s.chainId}",
             collectionAddress: "${s.collectionAddress}",
