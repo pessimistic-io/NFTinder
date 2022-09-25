@@ -3,13 +3,16 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 
 const signatureSchema = new Schema({
-    signature: {
+    signature_data: {
         type: String,
         required: true
     },
-
-    isExpired: {
-        type: Boolean,
+    nft_collection: {
+        type: String,
+        required: true
+    },
+    nft_token: {
+        type: String,
         required: true
     }
 

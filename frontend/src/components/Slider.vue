@@ -241,6 +241,27 @@ export default {
       const sig = await this.provider.send('eth_signTypedData_v4', [this.main_account, JSON.stringify(TypedMessage)]);
       this.likes_sig = sig;
       console.log("TypedMessage signature: %s", sig)
+
+      let sign_data = JSON.stringify({sig,message})
+
+      sign_data = sign_data.replace(/"/g, '\\"');
+
+      console.log(nft)
+
+      const q =
+      `mutation{
+          saveSignature(
+            nft_collection: "${nft.collectionAddress}",
+            nft_token: "${nft.collectionTokenId}",
+            signature: "${sign_data}"
+          )
+        }
+      `
+
+      // console.log(q)
+
+      // SAVE IN backend
+      await this.sendQuery(q)
     },
   }
 };
