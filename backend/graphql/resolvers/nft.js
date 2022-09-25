@@ -186,8 +186,8 @@ module.exports = {
             console.log('MATCH');
 
             const res = Nft.findOne({
-                collectionAddress: match.liked_collection_address,
-                tokenId: match.liked_token_id
+                collectionAddress: match.liker_collection_address,
+                tokenId: match.liker_token_id
             })
 
             console.log(res);

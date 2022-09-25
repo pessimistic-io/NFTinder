@@ -125,7 +125,7 @@ export default {
       // Have a match
       if (m) {
         this.matched = true;
-        this.matched_nft = this.current;
+        this.matched_nft = m;
         console.log(m)
       }
 

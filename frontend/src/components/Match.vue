@@ -10,9 +10,9 @@
       </div>
       <div :class="$style.nft_info">
         <div :class="$style.nft_wrapper">
-          <img :class="$style.nft_img" :src="liked_nft.imageUrl" alt=""/>
+          <img :class="$style.nft_img" :src="liked_nft.picUrl" alt=""/>
         </div>
-        <p :class="$style.nft_label">{{ liked_nft.name }}</p>
+        <p :class="$style.nft_label">{{ liked_nft.collectionName + " #" + liked_nft.tokenId }}</p>
       </div>
     </div>
     <button :class="$style.button" @click="swap">
