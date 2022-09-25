@@ -95,7 +95,14 @@ export default {
         findMatch(
           collectionAddress:"${this.user_nft.collectionAddress}",
           tokenId: "${this.user_nft.collectionTokenId}"
-        )
+        ){
+          picUrl
+          chainId
+          collectionName
+          collectionAddress
+          tokenId
+          ownerWallet
+        }
       }`
 
       const r = await this.sendQuery(q)

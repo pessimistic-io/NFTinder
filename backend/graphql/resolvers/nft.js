@@ -170,17 +170,17 @@ module.exports = {
                 return us_like.find(is_match(we));
             })
 
-            if (!match) return ['','','','']
+            if (!match) return null
 
             console.log('MATCH');
             console.log(match);
 
-            return [
-                match.liker_collection_address,
-                match.liker_token_id,
-                match.liked_collection_address,
-                match.liked_token_id
-            ]
+            const res = Nft.findOne({
+                collectionAddress: math.liked_collection_address,
+                tokenId: math.liked_token_id
+            })
+
+            return res
 
         } catch (err) {
             throw err;

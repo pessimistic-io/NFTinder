@@ -82,7 +82,7 @@ type RootQuery {
     nfts: [Nft!]
     singleNft(nftOwnId: ID!): Nft!
     showLikeNfts(nftOwnId: ID!): [Nft!]
-    findMatch(collectionAddress: String!, tokenId: String!): [String!]
+    findMatch(collectionAddress: String!, tokenId: String!): Nft
     showUnseenNfts(user: String!, collectionAddress: String!, tokenId: String!): [Nft!]
 }
 
