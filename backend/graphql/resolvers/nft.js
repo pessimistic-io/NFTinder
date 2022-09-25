@@ -152,10 +152,10 @@ module.exports = {
 
     findMatch: async args => {
 
-        const is_match = my=>yours=> {
-            return my.liked_token_id == yours.liker_token_id
-        && my.liked_collection_address == yours.liked_collection_address
-        }
+        // const is_match = my=>yours=> {
+        //     return my.liked_token_id == yours.liker_token_id
+        // && my.liked_collection_address == yours.liked_collection_address
+        // }
 
         try {
 
@@ -168,19 +168,30 @@ module.exports = {
                 liked_token_id: args.tokenId
             })
 
-            const match = we_like.find(we=>{
-                return us_like.find(is_match(we));
-            })
+            match = null
+
+            for (var i = we_like.length - 1; i >= 0; i--) {
+                const w = we_like[i]
+
+                match = us_like.find(my=>{
+                   return my.liker_token_id == w.liked_token_id
+                && my.liker_collection_address == w.liked_collection_address
+                })
+
+                if (match) break;
+            }
 
             if (!match) return null
 
             console.log('MATCH');
-            console.log(match);
 
             const res = Nft.findOne({
-                collectionAddress: math.liked_collection_address,
-                tokenId: math.liked_token_id
+                collectionAddress: match.liked_collection_address,
+                tokenId: match.liked_token_id
             })
+
+            console.log(res);
+
 
             return res
 
