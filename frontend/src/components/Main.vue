@@ -27,7 +27,7 @@
         <p v-if="bad_nfts != 0">Note: You have {{bad_nfts}} NFTs without picture</p>
       </form>
     </div>
-    <Slider v-else :candidate_nfts="candidate_nfts"/>
+    <Slider v-else :candidate_nfts="candidate_nfts" :user="main_account"/>
   </div>
 </template>
 <script>
@@ -191,9 +191,13 @@ export default {
             tokenId: "${s.tokenId}",
             ownerWallet: "${this.main_account}"
           }
-        ){chainId, collectionAddress, ownerWallet, tokenId}}`
+        ){ chainId, collectionAddress, ownerWallet, tokenId}}`
 
       const response = await this.sendQuery(auth_query)
+
+      const r = await response.json()
+
+      console.log(r)
 
       if (response.status==200){
 

@@ -26,6 +26,7 @@ export default {
 
   props: {
     candidate_nfts: Array(0),
+    user: ''
   },
 
   created() {
@@ -47,6 +48,20 @@ export default {
       this.cutQueue();
     },
 
+    async sendQuery(q) {
+
+      return await fetch('http://localhost:3000/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query: q,
+          variables:{}
+        })
+      })
+    },
+
     cutQueue() {
       if(this.queue.length > 1) {
         this.queue = this.queue.slice(1);
@@ -54,7 +69,21 @@ export default {
     },
 
     async sendLike() {
-      // like queue[0]
+
+      // console.log(this.queue[0])
+
+
+
+      // const q =
+      // `mutation{
+      //   likeNft(nftOwnId: "${this.$props.user}", nftLikeId: "${this.queue[0]._id}"){_id}}
+      // }
+      // `
+
+      // console.log(q)
+      // const r = await this.sendQuery(q)
+      // console.log(r)
+
     },
 
     async sendDislike() {
