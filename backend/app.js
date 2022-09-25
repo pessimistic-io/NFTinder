@@ -30,6 +30,8 @@ app.use(
     })
 );
 
+mongoose.set('useFindAndModify', false);
+
 const URL = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@clusternftinder.tajvrwb.mongodb.net/test`;
 const OPTIONS = { useNewUrlParser: true, useUnifiedTopology: true };
 mongoose.connect(URL, OPTIONS)

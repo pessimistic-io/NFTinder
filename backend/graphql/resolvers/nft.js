@@ -12,6 +12,8 @@ module.exports = {
 
     saveSignature: async args => {
 
+        console.log(args)
+
         await Signature.findOneAndUpdate({
             nft_collection: args.nft_collection,
             nft_token: args.nft_token
@@ -23,9 +25,11 @@ module.exports = {
     getSignature: async args => {
 
         const s = await Signature.findOne({
-            nft_collection: args.collectionAddress,
-            nft_token: args.tokenId
+            nft_collection: args.nft_collection,
+            nft_token: args.nft_token
         });
+
+        console.log(s)
 
         if (!s) return null
 

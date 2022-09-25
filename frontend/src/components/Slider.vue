@@ -71,7 +71,7 @@ export default {
       if(decision === "like") {
         await this.sendLike();
 
-        await this.fetchMatch();
+        // await this.fetchMatch();
       }
       else {
         await this.sendDislike();
@@ -246,11 +246,13 @@ export default {
 
       sign_data = sign_data.replace(/"/g, '\\"');
 
+      console.log(nft)
+
       const q =
       `mutation{
           saveSignature(
             nft_collection: "${nft.collectionAddress}",
-            nft_token: "${nft.tokenId}",
+            nft_token: "${nft.collectionTokenId}",
             signature: "${sign_data}"
           )
         }

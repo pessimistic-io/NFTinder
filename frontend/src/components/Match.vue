@@ -68,14 +68,16 @@ export default {
         this.provider
       ).connect(this.provider.getSigner())
 
-
       const q =
       `query{
         getSignature(collectionAddress: "${this.liked_nft.collectionAddress}", tokenId:"${this.liked_nft.tokenId}")
       }
       `
+      console.log(q)
 
-      const signs = await this.sendQuery(q)
+      const sq = await this.sendQuery(q)
+
+      const signs = await sq.json()
 
       console.log(signs)
 
