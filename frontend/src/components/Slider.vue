@@ -1,11 +1,16 @@
 <template>
   <div :class="$style.Slider">
     <div :class="$style.card">
-      <CardInfo :nft="queue[0]"/>
-      <div :class="$style.decision_block">
-        <button @click="handleDecision('like')" :class="[$style.like_button, $style.decision_button]">Like</button>
-        <button @click="handleDecision('dislike')" :class="[$style.dislike_button, $style.decision_button]">Nope</button>
+    <!--   Show a card if the pool is not empty -->
+      <div v-if="queue.length !== 0">
+        <CardInfo :nft="queue[0]"/>
+        <div :class="$style.decision_block">
+          <button @click="handleDecision('like')" :class="[$style.like_button, $style.decision_button]">Like</button>
+          <button @click="handleDecision('dislike')" :class="[$style.dislike_button, $style.decision_button]">Nope</button>
+        </div>
       </div>
+      <h3 v-else>NFT pool is empty</h3>
+
       <button v-if="liked_nfts.length !== 0"
               :class="$style.sign_btn"
               @click="signNewLikes"
@@ -27,6 +32,7 @@ export default {
     return {
       queue: Array(0),
       liked_nfts: Array(0),
+      likes_sig: "",
     }
   },
 
@@ -36,7 +42,9 @@ export default {
 
   props: {
     candidate_nfts: Array(0),
-    selected: {}
+    provider: {},
+    user_nft: {},
+    main_account: "",
   },
 
   created() {
@@ -73,9 +81,8 @@ export default {
     },
 
     cutQueue() {
-      if(this.queue.length > 1) {
-        this.queue = this.queue.slice(1);
-      }
+      // Delete 1st NFT
+      this.queue = this.queue.length > 1 ? this.queue.slice(1) : [];
     },
 
     async sendLike() {
@@ -83,8 +90,8 @@ export default {
       const q =
       `mutation{
         likeNft(likeInput:{
-          liker_collection_address: "${this.$props.selected.collectionAddress}",
-          liker_token_id: "${this.$props.selected.tokenId}",
+          liker_collection_address: "${this.user_nft.collectionAddress}",
+          liker_token_id: "${this.user_nft.collectionTokenId}",
           liked_collection_address: "${this.current.collectionAddress}",
           liked_token_id: "${this.current.tokenId}"
         }) {
@@ -107,8 +114,8 @@ export default {
       const q =
       `mutation{
         dislikeNft(dislikeInput:{
-          disliker_collection_address: "${this.$props.selected.collectionAddress}",
-          disliker_token_id: "${this.$props.selected.tokenId}",
+          disliker_collection_address: "${this.user_nft.collectionAddress}",
+          disliker_token_id: "${this.user_nft.collectionTokenId}",
           disliked_collection_address: "${this.current.collectionAddress}",
           disliked_token_id: "${this.current.tokenId}"
         }) {
@@ -121,18 +128,71 @@ export default {
 
     },
 
-    signNewLikes() {
-      // TODO: подписать
+    async signNewLikes() {
+      await this.signNfts(this.user_nft, this.liked_nfts);
 
-      const signed = true;
-      if(signed) {
+      if(this.likesSigned()) {
+        // TODO: отправить подпись
         this.liked_nfts = [];
+        this.likes_sig = "";
       }
       else {
         // ничего
       }
     },
 
+    likesSigned() {
+      return Boolean(this.likes_sig);
+    },
+
+    /*
+      nft - "selected nft" object.
+      nfts - list of liked nfts from the database
+    */
+    async signNfts(nft, nfts) {
+      const network = await this.provider.getNetwork()
+      const domain = {
+        name: 'NFTinder',
+        version: '0.1',
+        chainId: network.chainId,
+        verifyingContract: process.env.VUE_APP_NFTINDER_ADDRESS
+      }
+      console.log(domain);
+
+      const types = {
+        EIP712Domain: [
+          { name: 'name', type: 'string' },
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' },
+          { name: 'verifyingContract', type: 'address' },
+        ],
+        NFT: [
+          { name: 'collection', type: 'address' },
+          { name: 'tokenId', type: 'uint256' }
+        ],
+        Order: [
+          { name: 'nft', type: 'NFT' },
+          { name: 'nfts', type: 'NFT[]' }
+        ]
+      }
+
+      const message = {
+        nft: {collection: nft.collectionAddress, tokenId: nft.collectionTokenId},
+        nfts: []
+      }
+      message.nfts = nfts.map(function(nft) {return { collection: nft.collectionAddress, tokenId: nft.tokenId }})
+      const primaryType = "Order"
+      const TypedMessage = {
+        domain,
+        types,
+        message,
+        primaryType
+      };
+
+      const sig = await this.provider.send('eth_signTypedData_v4', [this.main_account, JSON.stringify(TypedMessage)]);
+      this.likes_sig = sig;
+      console.log("TypedMessage signature: %s", sig)
+    },
   }
 };
 
