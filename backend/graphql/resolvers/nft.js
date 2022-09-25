@@ -18,6 +18,7 @@ module.exports = {
             throw err;
         }
     },
+
     singleNft: async args => {
         try {
             const nfts = await Nft.find();
@@ -122,6 +123,7 @@ module.exports = {
         try {
 
             const nfts = await Nft.find()
+
             const likes = await LikeNft.find({
                 liker_collection_address: args.collectionAddress,
                 liker_token_id: args.tokenId
@@ -131,16 +133,44 @@ module.exports = {
                 disliker_token_id: args.tokenId
             })
 
-
-            // console.log(likes)
-
-
-            return nfts
+            const us_like = await LikeNft.find({
+                liked_collection_address: args.collectionAddress,
+                liked_token_id: args.tokenId
+            })
+            const filtered = nfts
                 .filter(not_own)
-                .filter(n => { // TODO
-                    return !likes.concat(dislikes).find(l => l.collectionAddress == n.collectionAddress && l.tokenId == n.tokenId)
+                .filter(n => {
+                    const c = likes.find(l => {
+                        return l.liked_collection_address == n.collectionAddress
+                        && l.liked_token_id == n.tokenId
+                    })
+
+                    const d = dislikes.find(l=>{
+                      return l.disliked_collection_address == n.collectionAddress
+                        && l.disliked_token_id == n.tokenId
+                    })
+
+                    return !c && !d;
                 })
-                .map(transformNft)
+
+            const liked = []
+
+            const other = []
+
+            filtered.forEach(n=>{
+
+                if (us_like.find(l=>l.liker_collection_address==n.collectionAddress
+                    &&l.liker_token_id==n.tokenId)) {
+                    liked.push(n)
+                } else {
+                    other.push(n)
+                }
+            })
+
+            const all = liked.concat(other)
+
+            return all.map(transformNft)
+
 
         } catch (err) {
             throw err;
