@@ -1,9 +1,15 @@
 <template>
   <div :class="$style.Slider">
-    <CardInfo :nft="queue[0]"/>
-    <div :class="$style.decision_block">
-      <button @click="handleDecision('like')" :class="[$style.like_button, $style.decision_button]">Like</button>
-      <button @click="handleDecision('dislike')" :class="[$style.dislike_button, $style.decision_button]">Nope</button>
+    <div :class="$style.card">
+      <CardInfo :nft="queue[0]"/>
+      <div :class="$style.decision_block">
+        <button @click="handleDecision('like')" :class="[$style.like_button, $style.decision_button]">Like</button>
+        <button @click="handleDecision('dislike')" :class="[$style.dislike_button, $style.decision_button]">Nope</button>
+      </div>
+      <button v-if="liked_nfts.length !== 0"
+              :class="$style.sign_btn"
+              @click="signNewLikes"
+      >Sign New Likes</button>
     </div>
   </div>
 </template>
@@ -55,11 +61,24 @@ export default {
 
     async sendLike() {
       // like queue[0]
+      this.liked_nfts.push(this.queue[0]);
     },
 
     async sendDislike() {
 
-    }
+    },
+
+    signNewLikes() {
+      // TODO: подписать
+
+      const signed = true;
+      if(signed) {
+        this.liked_nfts = [];
+      }
+      else {
+        // ничего
+      }
+    },
   }
 };
 
@@ -80,6 +99,7 @@ export default {
   .decision_block {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 10px;
   }
 
   .decision_button {
@@ -89,6 +109,10 @@ export default {
 
   .like_button {
     margin-right: 10px;
+  }
+
+  .sign_btn {
+    font-size: 30px;
   }
 }
 
