@@ -2,12 +2,36 @@ const Nft = require('../../models/nft');
 const User = require('../../models/user');
 const LikeNft = require('../../models/likeNft')
 const DislikeNft = require('../../models/dislikeNft')
+const Signature = require('../../models/signature')
 
 const {
     transformNft
 } = require('./merge');
 
 module.exports = {
+
+    saveSignature: async args => {
+
+        await Signature.findOneAndUpdate({
+            nft_collection: args.nft_collection,
+            nft_token: args.nft_token
+        },{signature_data: args.signature}, {upsert: true})
+
+        return args.signature;
+    },
+
+    getSignature: async args => {
+
+        const s = await Signature.findOne({
+            nft_collection: args.collectionAddress,
+            nft_token: args.tokenId
+        });
+
+        if (!s) return null
+
+        return s.signature_data;
+    },
+
     nfts: async () => {
         try {
             const nfts = await Nft.find();

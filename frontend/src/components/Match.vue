@@ -22,6 +22,8 @@
 </template>
 <script>
 
+import { ethers } from 'ethers';
+
 export default {
   name: 'Match',
 
@@ -30,8 +32,56 @@ export default {
     liked_nft: {},
   },
 
+  data: () => {
+    return {
+      provider: {},
+    }
+  },
+
+  async created() {
+
+    this.provider = new ethers.providers.Web3Provider(window.ethereum)
+  },
+
   methods: {
-    swap() {
+
+    async sendQuery(q) {
+
+      return await fetch('http://localhost:3000/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query: q,
+          variables:{}
+        })
+      })
+    },
+
+
+    async swap() {
+
+      const contract = new ethers.Contract(
+        process.env.VUE_APP_NFTINDER_ADDRESS,
+        ["function swap(uint index, Lib.Order order, bytes signature)"],
+        this.provider
+      ).connect(this.provider.getSigner())
+
+
+      const q =
+      `query{
+        getSignature(collectionAddress: "${this.liked_nft.collectionAddress}", tokenId:"${this.liked_nft.tokenId}")
+      }
+      `
+
+      const signs = await this.sendQuery(q)
+
+      console.log(signs)
+
+      // TODO: get order, calculate index, get signature
+
+      // contract.swap()
 
     }
   }

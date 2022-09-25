@@ -85,6 +85,7 @@ type RootQuery {
     findMatch(likeInput: LikeInput!): Nft
     findMatchAll(collectionAddress: String!, tokenId: String!): Nft
     showUnseenNfts(user: String!, collectionAddress: String!, tokenId: String!): [Nft!]
+    getSignature(collectionAddress: String!, tokenId: String!): String
 }
 
 type RootMutation {
@@ -92,8 +93,8 @@ type RootMutation {
     addNft(nftInput: NftInput!): Nft!
     likeNft(likeInput: LikeInput!): Like!
     dislikeNft(dislikeInput: DislikeInput!): Dislike!
+    saveSignature(nft_collection: String!, nft_token: String!, signature: String!): String!
     signNfts(nftIds: [ID!], signature: SignatureInput!): Signature!
-    saveSignature(signId: SignatureInput!): Signature!
     cleanDb(nftOwnId: ID!, likeInput: LikeInput): Nft!
 }
 
