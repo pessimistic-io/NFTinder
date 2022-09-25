@@ -3,14 +3,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const likeSchema = new Schema({
-    nftOwn: {
-        type: Schema.Types.ObjectId,
-        ref: 'Nft'
-    },
-    nftLike: {
-        type: Schema.Types.ObjectId,
-        ref: 'Nft'
-    }
+    liker_collection_address: {type: String},
+    liker_token_id: {type: String},
+    liked_collection_address: {type: String},
+    liked_token_id: {type: String}
 });
 
 module.exports = mongoose.model('LikeNft', likeSchema);
