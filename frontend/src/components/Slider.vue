@@ -91,7 +91,7 @@ export default {
     async fetchMatch() {
 
       const q=
-      `queue{
+      `query{
         findMatch(
           collectionAddress:"${this.user_nft.collectionAddress}",
           tokenId: "${this.user_nft.collectionTokenId}"
@@ -102,9 +102,11 @@ export default {
 
       const res = await r.json()
 
-      if (res[0]!='') {
+      const m = res.data.findMatch
+
+      if (m && m[0]!='') {
         alert('WE HAVE A MATCH')
-        console.log(res)
+        console.log(m)
       }
 
     },
