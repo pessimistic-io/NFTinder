@@ -3,7 +3,7 @@
     <div :class="$style.imgBlock">
       <img :class="$style.image" :src="nft.picUrl" :alt="nft.name"/>
     </div>
-    <h5 :class="$style.name_tag">{{ nft.name }}</h5>
+    <h5 :class="$style.name_tag">{{ nft.collectionName + "#" + nft.tokenId }}</h5>
   </div>
 </template>
 <script>
@@ -26,16 +26,21 @@ export default {
 
   .imgBlock {
     overflow: hidden;
-    height: 80%;
+    height: 200px;
+    width: 100%;
+    position: relative;
     margin-bottom: 10px;
   }
 
   .image {
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 100%;
   }
 
   .name_tag {
-
+    overflow: hidden;
   }
 }
 </style>

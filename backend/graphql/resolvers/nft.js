@@ -148,5 +148,74 @@ module.exports = {
             throw err;
         }
 
+    },
+
+    findMatch: async args => {
+
+        const mutual = await LikeNft.findOne({
+            liker_collection_address: args.likeInput.liked_collection_address,
+            liker_token_id: args.likeInput.liked_token_id,
+            liked_collection_address: args.likeInput.liker_collection_address,
+            liked_token_id: args.likeInput.liker_token_id
+        })
+
+        if (!mutual) return null
+
+        const res = Nft.findOne({
+            collectionAddress: mutual.liker_collection_address,
+            tokenId: mutual.liker_token_id
+        })
+
+        return res
+
+    },
+    findMatchAll: async args => {
+
+        // const is_match = my=>yours=> {
+        //     return my.liked_token_id == yours.liker_token_id
+        // && my.liked_collection_address == yours.liked_collection_address
+        // }
+
+        try {
+
+            const we_like = await LikeNft.find({
+                liker_collection_address: args.collectionAddress,
+                liker_token_id: args.tokenId
+            })
+            const us_like = await LikeNft.find({
+                liked_collection_address: args.collectionAddress,
+                liked_token_id: args.tokenId
+            })
+
+            match = null
+
+            for (var i = we_like.length - 1; i >= 0; i--) {
+                const w = we_like[i]
+
+                match = us_like.find(my=>{
+                   return my.liker_token_id == w.liked_token_id
+                && my.liker_collection_address == w.liked_collection_address
+                })
+
+                if (match) break;
+            }
+
+            if (!match) return null
+
+            console.log('MATCH');
+
+            const res = Nft.findOne({
+                collectionAddress: match.liker_collection_address,
+                tokenId: match.liker_token_id
+            })
+
+            console.log(res);
+
+
+            return res
+
+        } catch (err) {
+            throw err;
+        }
     }
 }
