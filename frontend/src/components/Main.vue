@@ -96,7 +96,6 @@ export default {
 
 
   async created() {
-    this.setQuicknodeProvider();
     /* duplicates accounts watcher handler, because of "immediate: false" */
     this.updateMainAccount();
     await this.updateNfts();
@@ -124,11 +123,6 @@ export default {
       });
     },
 
-    setQuicknodeProvider() {
-      const provider = process.env.VUE_APP_QUICKNODE;
-      this.quicknode_provider = new ethers.providers.JsonRpcProvider(provider);
-    },
-
     updateMainAccount() {
       if(this.accounts) {
         this.main_account = this.accounts[0];
@@ -140,24 +134,40 @@ export default {
         throw "User account is not set: unable to update nfts";
       }
       
-      let nfts = await this.askNftPort(this.main_account)
+      const np = await this.askNftPort(this.main_account)
       const qn = await this.askQuickNode(this.main_account)
-      nfts = nfts.concat(qn.assets)
-      
+      const nfts = np.concat(qn)
 
-      this.bad_nfts = nfts.filter(nft => !nft.imageUrl).length;
+      this.bad_nfts = nfts.filter(nft => !nft.imageUrl).length
 
       /* Filter out those that have no image links */
       this.nfts = nfts
-          .filter((nft) => { return nft.imageUrl; });
+          .filter((nft) => { return nft.imageUrl; })
     },
 
     async askQuickNode(account) {
-      return await this.quicknode_provider.send("qn_fetchNFTs", {
+      const quicknode = new ethers.providers.JsonRpcProvider(process.env.VUE_APP_QUICKNODE)
+
+      const response = await quicknode.send("qn_fetchNFTs", {
         wallet: account,
         omitFields: ["traits", "provenance"],
         page: 1,
-      });
+      })
+      // console.log(response)
+      return response.assets
+        .filter(nft => nft.collectionAddress)
+        .filter(nft => nft.collectionTokenId)
+        .map(function(nft) {
+          return {
+            chain: nft.chain || 'ETH',
+            collectionAddress: nft.collectionAddress,
+            collectionTokenId: nft.collectionTokenId,
+            currentOwner: account,
+            collectionName: nft.collectionName || '',
+            name: nft.name || '',
+            imageUrl: nft.imageUrl || ''
+          }
+        })
     },
 
     async askNftPort(account) {
@@ -171,15 +181,16 @@ export default {
         }
       })
       const res = await response.json()
+      // console.log(res)
       return res.nfts
         .filter(nft => nft.contract_address)
         .filter(nft => nft.token_id)
         .map(function(nft) {
           return {
-            chain: 'EVM',
+            chain: 'ETH',
             collectionAddress: nft.contract_address,
-            currentOwner: account,
             collectionTokenId: nft.token_id,
+            currentOwner: account,
             collectionName: nft.contract.name || '',
             name: nft.name || '',
             imageUrl: nft.cached_file_url || nft.file_url || ''
@@ -206,11 +217,11 @@ export default {
     },
 
     async approve(collection, token) {
-      const contract = new ethers.Contract(s.collectionAddress, NFT_ABI, this.provider)
+      const contract = new ethers.Contract(collection, NFT_ABI, this.provider)
           .connect(this.provider.getSigner())
 
       const NFTinder = process.env.VUE_APP_NFTINDER_ADDRESS;
-      const approved_address = await contract.getApproved(s.tokenId);
+      const approved_address = await contract.getApproved(token);
       let approved = approved_address === NFTinder;
       console.log("Token %s is approved for NFTinder? %s", token, approved)
       if (!approved) {
